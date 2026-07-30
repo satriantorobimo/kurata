@@ -29,7 +29,8 @@ export function AdminConsole() {
   const records = useMemo(() => collection ? data[collection] : [], [collection, data]);
   const filtered = useMemo(() => records.filter((item) => `${item.name} ${item.subtitle}`.toLowerCase().includes(query.toLowerCase())), [records, query]);
   const selected = records.find((item) => item.id === selectedId) ?? null;
-  const pendingCount = data.users.concat(data.brokers, data.assets).filter((item) => item.status === "pending" || item.status === "under_review").length;
+  const allReviewRecords: ReviewRecord[] = [...data.users, ...data.brokers, ...data.assets];
+  const pendingCount = allReviewRecords.filter((item) => item.status === "pending" || item.status === "under_review").length;
 
   const updateStatus = (status: ReviewStatus) => {
     if (!collection || !selected) return;
