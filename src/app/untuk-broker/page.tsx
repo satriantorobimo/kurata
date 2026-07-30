@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CheckCircle2, ShieldCheck, UsersRound } from "lucide-react";
 import { BrokerBenefits } from "@/presentation/components/broker/BrokerBenefits";
 import { BrokerFaq } from "@/presentation/components/broker/BrokerFaq";
@@ -55,6 +56,7 @@ export default function BrokerPage() {
             <p className="mb-2 text-label-sm font-label-sm uppercase tracking-wider text-primary">Mulai kemitraan</p>
             <h2 id="broker-registration-title" className="text-3xl font-bold text-on-surface">Daftar Menjadi Broker Partner</h2>
             <p className="mt-4 text-body-md leading-7 text-on-surface-variant">Kirim informasi awal Anda. Tim Kurata akan menggunakan data ini sebagai dasar peninjauan dan proses onboarding berikutnya.</p>
+            <Link href="/broker/dashboard" className="mt-5 inline-flex text-label-md font-label-md text-primary hover:underline">Sudah menjadi Broker Partner? Buka dashboard →</Link>
             <div className="mt-7 rounded-xl border border-primary/15 bg-surface-container-lowest p-5">
               <div className="flex gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" /><div><h3 className="text-label-md font-label-md text-on-surface">Privasi dan keamanan data</h3><p className="mt-1 text-label-sm leading-5 text-on-surface-variant">Hanya kirim data kontak dan profil profesional. Dokumen sensitif akan diminta melalui proses aman bila memang diperlukan.</p></div></div>
             </div>

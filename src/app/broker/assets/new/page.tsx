@@ -1,0 +1,5 @@
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import { BrokerAssetForm } from "@/presentation/components/broker/BrokerAssetForm";
+
+export default function NewBrokerAssetPage() { return <div className="min-h-screen bg-surface-container-low pt-20"><div className="container-main py-10 md:py-14"><Link href="/broker/dashboard" className="inline-flex items-center gap-2 text-label-md font-label-md text-primary hover:underline"><ArrowLeft className="h-4 w-4" />Kembali ke dashboard</Link><div className="mt-7 grid gap-8 lg:grid-cols-[0.75fr_1.25fr]"><div><p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">Pengajuan listing</p><h1 className="mt-2 text-3xl font-bold tracking-tight text-on-surface">Tambahkan Aset untuk Ditinjau</h1><p className="mt-4 text-body-md leading-7 text-on-surface-variant">Lengkapi data aset dengan jelas. Tim Kurata akan memeriksa informasi sebelum listing dapat dipublikasikan.</p></div><BrokerAssetForm /></div></div></div>; }

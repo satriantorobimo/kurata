@@ -19,6 +19,10 @@ Kurata is a responsive property-land marketplace prototype for Indonesia. It hel
 | `/cari-tanah` | Search and filter land listings |
 | `/cari-tanah/[id]` | Property detail page |
 | `/layanan` | Kurata service information and consultation form |
+| `/investasi` | Land-investment guidance, listings, and consultation form |
+| `/blog` | Kurata article discovery, category filters, and search |
+| `/blog/[slug]` | Individual article detail page |
+| `/bantuan` | Help Center, FAQ search, and support request form |
 | `/untuk-broker` | Broker Partner program and registration form |
 | `/masuk` | Sign-in form |
 | `/daftar` | Account registration form |

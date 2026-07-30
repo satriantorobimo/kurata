@@ -17,6 +17,7 @@ const NAV_LINKS: NavLink[] = [
   { label: "Beranda", href: "/" },
   { label: "Cari Tanah", href: "/cari-tanah" },
   { label: "Untuk Broker", href: "/untuk-broker" },
+  { label: "Layanan Investasi", href: "/investasi" },
   { label: "Layanan Kurata", href: "/layanan" },
   { label: "Blog", href: "/blog" },
   { label: "Bantuan", href: "/bantuan" },
@@ -42,7 +43,7 @@ export function Header() {
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+        <nav className="hidden xl:flex items-center gap-5 2xl:gap-7">
           {NAV_LINKS.map((link) => {
             const isActive =
               link.href === "/"
@@ -79,7 +80,7 @@ export function Header() {
         {/* Mobile Hamburger */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 text-on-surface-variant hover:text-primary transition-colors"
+          className="xl:hidden p-2 text-on-surface-variant hover:text-primary transition-colors"
           aria-label={mobileMenuOpen ? "Tutup menu" : "Buka menu"}
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -88,7 +89,7 @@ export function Header() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-surface-container-lowest border-t border-border-subtle shadow-lg">
+        <div className="xl:hidden bg-surface-container-lowest border-t border-border-subtle shadow-lg">
           <nav className="container-main py-4 flex flex-col gap-1">
             {NAV_LINKS.map((link) => {
               const isActive =
