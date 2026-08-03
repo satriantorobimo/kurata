@@ -40,17 +40,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-12">
           {/* Brand Column */}
           <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center gap-stack-md mb-6">
+            <div className="flex items-center gap-stack-md mb-4">
               <Image
 src="/logo-footer.png"
                 alt="Kurata Logo"
-                width={80}
-                height={80}
-                className="rounded-full object-cover border-2 border-on-primary-container"
+                width={130}
+                height={130}
               />
-              <span className="font-headline-sm text-headline-sm text-on-primary">
-                Kurata
-              </span>
             </div>
             <p className="text-body-md text-on-primary/80">
               Investasi tanah masa depan dengan transparansi dan keamanan

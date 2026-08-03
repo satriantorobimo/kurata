@@ -49,7 +49,7 @@ export function HeaderClient() {
 
   return <header className="fixed top-0 z-50 w-full bg-surface-container-lowest/90 shadow-glass backdrop-blur-md">
     <div className="container-main flex h-16 items-center justify-between md:h-20">
-      <Link href="/" className="shrink-0"><Image src="/logo.png" alt="Kurata Logo" width={56} height={56} className="rounded-full object-cover md:h-20 md:w-20" priority /></Link>
+      <Link href="/" className="shrink-0"><Image src="/logo.png" alt="Kurata Logo" width={200} height={130} className="rounded-full object-cover " priority /></Link>
       <nav className="hidden items-center gap-5 xl:flex 2xl:gap-7">{NAV_LINKS.map((link) => {
         const active = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
         return <Link key={link.href} href={link.href} className={cn("whitespace-nowrap text-label-md font-label-md transition-colors", active ? "font-bold text-primary" : "text-on-surface-variant hover:text-primary")}>{link.label}</Link>;

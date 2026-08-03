@@ -26,8 +26,7 @@ export function AuthShell({ eyebrow, title, description, children }: { eyebrow: 
         <section className="flex min-h-150 items-center px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
           <div className="mx-auto w-full max-w-md">
             <Link href="/" className="inline-flex items-center gap-3 text-label-md font-label-md text-primary">
-              <Image src="/logo.png" alt="Kurata" width={44} height={44} className="rounded-full" />
-              Kurata
+              <Image src="/logo.png" alt="Kurata" width={200} height={130} className="rounded-full" />
             </Link>
             <p className="mt-8 text-label-sm font-label-sm uppercase tracking-wider text-primary">{eyebrow}</p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl">{title}</h1>
