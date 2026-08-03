@@ -14,9 +14,11 @@ if (!databaseUrl) {
 
 const url = new URL(databaseUrl);
 const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
+const isLocalDatabase = localHosts.has(url.hostname);
+const isRemoteDemoSeed = !isLocalDatabase && process.env.ALLOW_REMOTE_DEMO_SEED === "true";
 
-if (process.env.NODE_ENV === "production" || !localHosts.has(url.hostname)) {
-  throw new Error("Refusing to seed accounts outside a local, non-production database.");
+if ((process.env.NODE_ENV === "production" && !isRemoteDemoSeed) || (!isLocalDatabase && !isRemoteDemoSeed)) {
+  throw new Error("Refusing to seed accounts outside a local database without ALLOW_REMOTE_DEMO_SEED=true.");
 }
 
 const passwordOptions = {
@@ -28,13 +30,22 @@ const passwordOptions = {
 };
 
 const accounts = [
-  { email: "demo.user@kurata.test", fullName: "Demo User", role: "user" },
-  { email: "admin@kurata.test", fullName: "Kurata Admin", role: "admin" },
-  { email: "master.admin@kurata.test", fullName: "Kurata Master Admin", role: "super_admin" },
+  { email: "demo.user@kurata.test", fullName: "Demo User", role: "user", passwordKey: "DEMO_USER_PASSWORD" },
+  { email: "admin@kurata.test", fullName: "Kurata Admin", role: "admin", passwordKey: "DEMO_ADMIN_PASSWORD" },
+  { email: "master.admin@kurata.test", fullName: "Kurata Master Admin", role: "super_admin", passwordKey: "DEMO_MASTER_ADMIN_PASSWORD" },
 ];
 
 function createPassword() {
   return `${randomBytes(18).toString("base64url")}Aa1!`;
+}
+
+if (isRemoteDemoSeed) {
+  for (const account of accounts) {
+    const password = process.env[account.passwordKey];
+    if (!password || password.length < 16) {
+      throw new Error(`${account.passwordKey} must be set to a private password of at least 16 characters.`);
+    }
+  }
 }
 
 const pool = new pg.Pool({ connectionString: databaseUrl });
@@ -85,7 +96,7 @@ try {
       );
 
       if (credentialResult.rowCount === 0) {
-        const password = createPassword();
+        const password = isRemoteDemoSeed ? process.env[account.passwordKey] : createPassword();
         const passwordHash = await argon2.hash(password, passwordOptions);
 
         await client.query(
@@ -108,9 +119,9 @@ try {
 
     await client.query("COMMIT");
 
-    console.log("Local verified dummy accounts:");
+    console.log(isRemoteDemoSeed ? "Remote verified demo accounts:" : "Local verified dummy accounts:");
     for (const account of createdAccounts) {
-      console.log(`${account.role}\t${account.email}\t${account.password}`);
+      console.log(`${account.role}\t${account.email}\t${isRemoteDemoSeed ? "password configured privately" : account.password}`);
     }
   } catch (error) {
     await client.query("ROLLBACK");
