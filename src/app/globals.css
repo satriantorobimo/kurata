@@ -103,8 +103,12 @@
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--spacing-margin);
-  padding-right: var(--spacing-margin);
+  padding-left: 1rem;
+  padding-right: 1rem;
+  @media (min-width: 640px) {
+    padding-left: var(--spacing-margin);
+    padding-right: var(--spacing-margin);
+  }
 }
 
 @utility glass {
