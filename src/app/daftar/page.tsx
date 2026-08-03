@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { AuthShell } from "@/presentation/components/auth/AuthShell";
 import { RegisterForm } from "@/presentation/components/auth/RegisterForm";
+import { privateRobots } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Daftar | Kurata",
   description: "Buat akun Kurata untuk memulai kebutuhan pertanahan Anda.",
+  robots: privateRobots,
 };
 
 export default function RegisterPage() {

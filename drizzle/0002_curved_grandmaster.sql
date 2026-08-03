@@ -1,0 +1,1 @@
+ALTER TYPE "auth"."user_role" ADD VALUE 'super_admin';

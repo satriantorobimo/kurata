@@ -11,12 +11,18 @@ import { SearchToolbar } from "@/presentation/components/search/SearchToolbar";
 import { SearchResults } from "@/presentation/components/search/SearchResults";
 import { ActiveFilters } from "@/presentation/components/search/ActiveFilters";
 
-export const metadata: Metadata = {
-  title: "Cari Tanah | Kurata",
-  description: "Temukan tanah pilihan untuk hunian, investasi, dan usaha di seluruh Indonesia.",
-};
-
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const parameters = await searchParams;
+  const hasFilters = Object.values(parameters).some((value) => Array.isArray(value) ? value.length > 0 : Boolean(value));
+  return {
+    title: "Cari Tanah",
+    description: "Temukan tanah pilihan untuk hunian, investasi, dan usaha di seluruh Indonesia.",
+    alternates: { canonical: "/cari-tanah" },
+    robots: hasFilters ? { index: false, follow: true } : { index: true, follow: true },
+  };
+}
 
 const CERTIFICATES = ["SHM", "HGB", "HGU", "HP"] as const;
 const BADGES = ["exclusive", "broker"] as const;

@@ -11,6 +11,7 @@ import { PropertyContactPanel } from "@/presentation/components/detail/PropertyC
 import { PropertyFacts } from "@/presentation/components/detail/PropertyFacts";
 import { PropertyGallery } from "@/presentation/components/detail/PropertyGallery";
 import { RelatedProperties } from "@/presentation/components/detail/RelatedProperties";
+import { absoluteUrl, jsonLdScript } from "@/lib/seo";
 
 type PageParams = Promise<{ id: string }>;
 
@@ -36,13 +37,14 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${property.title} | Kurata`,
+    title: property.title,
     description: property.description.slice(0, 160),
     openGraph: {
-      title: `${property.title} | Kurata`,
+      title: property.title,
       description: property.description.slice(0, 160),
       images: [{ url: property.imageUrls[0], alt: property.title }],
     },
+    alternates: { canonical: `/cari-tanah/${id}` },
   };
 }
 
@@ -56,9 +58,31 @@ export default async function PropertyDetailPage({
   if (!property) notFound();
 
   const relatedProperties = await new GetRelatedProperties(container.propertyRepo).execute(id);
+  const propertyUrl = absoluteUrl(`/cari-tanah/${id}`);
+  const propertyJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Offer",
+    name: property.title,
+    url: propertyUrl,
+    priceCurrency: "IDR",
+    price: property.price.replace(/[^0-9]/g, ""),
+    availability: "https://schema.org/InStock",
+    itemOffered: { "@type": "Place", name: property.title, description: property.description, image: property.imageUrls, address: property.address },
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Beranda", item: absoluteUrl("/") },
+      { "@type": "ListItem", position: 2, name: "Cari Tanah", item: absoluteUrl("/cari-tanah") },
+      { "@type": "ListItem", position: 3, name: property.title, item: propertyUrl },
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-background pt-16 md:pt-20">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(propertyJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbJsonLd) }} />
       <div className="container-main py-5">
         <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-label-sm text-on-surface-variant">
           <Link href="/" className="hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Beranda</Link>

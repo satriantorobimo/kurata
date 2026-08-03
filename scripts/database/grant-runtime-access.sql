@@ -1,0 +1,51 @@
+-- Run as the migration owner after applying migrations to each database.
+-- The application can use tables but cannot alter the schema.
+GRANT USAGE ON SCHEMA auth, core, content TO kurata_app, kurata_readonly;
+GRANT USAGE ON SCHEMA auth_private TO kurata_app;
+
+REVOKE ALL ON SCHEMA auth_private FROM PUBLIC, kurata_readonly;
+REVOKE ALL ON ALL TABLES IN SCHEMA auth_private FROM PUBLIC, kurata_readonly;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA auth_private FROM PUBLIC, kurata_readonly;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA auth, core, content TO kurata_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA auth, core, content TO kurata_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA auth_private TO kurata_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA auth_private TO kurata_app;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA auth, core, content TO kurata_readonly;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA auth, core, content TO kurata_readonly;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA auth
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO kurata_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA core
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO kurata_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA content
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO kurata_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA auth
+  GRANT USAGE, SELECT ON SEQUENCES TO kurata_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA core
+  GRANT USAGE, SELECT ON SEQUENCES TO kurata_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA content
+  GRANT USAGE, SELECT ON SEQUENCES TO kurata_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA auth_private
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO kurata_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA auth_private
+  GRANT USAGE, SELECT ON SEQUENCES TO kurata_app;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA auth
+  GRANT SELECT ON TABLES TO kurata_readonly;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA core
+  GRANT SELECT ON TABLES TO kurata_readonly;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA content
+  GRANT SELECT ON TABLES TO kurata_readonly;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA auth
+  GRANT USAGE, SELECT ON SEQUENCES TO kurata_readonly;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA core
+  GRANT USAGE, SELECT ON SEQUENCES TO kurata_readonly;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA content
+  GRANT USAGE, SELECT ON SEQUENCES TO kurata_readonly;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA auth_private
+  REVOKE ALL ON TABLES FROM PUBLIC, kurata_readonly;
+ALTER DEFAULT PRIVILEGES FOR ROLE kurata_owner IN SCHEMA auth_private
+  REVOKE ALL ON SEQUENCES FROM PUBLIC, kurata_readonly;

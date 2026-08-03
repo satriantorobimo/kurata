@@ -1,25 +1,24 @@
 import { MockPropertyRepository } from "../repositories/MockPropertyRepository";
-import { MockStatisticRepository } from "../repositories/MockStatisticRepository";
+import { PostgresStatisticRepository } from "../repositories/PostgresStatisticRepository";
 import { MockBrokerApplicationRepository } from "../repositories/MockBrokerApplicationRepository";
 import { MockServiceInquiryRepository } from "../repositories/MockServiceInquiryRepository";
 import { MockInvestmentInquiryRepository } from "../repositories/MockInvestmentInquiryRepository";
-import { MockBlogArticleRepository } from "../repositories/MockBlogArticleRepository";
+import { PostgresBlogArticleRepository } from "../repositories/PostgresBlogArticleRepository";
 import { MockSupportRequestRepository } from "../repositories/MockSupportRequestRepository";
 
 /**
  * Simple Dependency Injection container.
  * Creates and caches singleton instances of all repositories.
  *
- * When moving to real APIs:
- *   1. Create ApiPropertyRepository implementing IPropertyRepository
- *   2. Swap the instance here — no other code changes needed.
+ * Each repository can evolve independently while the application use cases
+ * keep a stable interface.
  */
 const propertyRepo = new MockPropertyRepository();
-const statisticRepo = new MockStatisticRepository();
+const statisticRepo = new PostgresStatisticRepository();
 const brokerApplicationRepo = new MockBrokerApplicationRepository();
 const serviceInquiryRepo = new MockServiceInquiryRepository();
 const investmentInquiryRepo = new MockInvestmentInquiryRepository();
-const blogArticleRepo = new MockBlogArticleRepository();
+const blogArticleRepo = new PostgresBlogArticleRepository();
 const supportRequestRepo = new MockSupportRequestRepository();
 
 export const container = {

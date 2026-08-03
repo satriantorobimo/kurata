@@ -6,7 +6,8 @@ import { BLOG_CATEGORIES, BLOG_CATEGORY_LABELS, isBlogCategory } from "@/domain/
 import { container } from "@/infrastructure/di/container";
 import { BlogCard } from "@/presentation/components/blog/BlogCard";
 
-export const metadata: Metadata = { title: "Blog | Kurata", description: "Panduan, wawasan, dan artikel edukasi seputar tanah, properti, investasi, serta proses pertanahan." };
+export const metadata: Metadata = { title: "Blog", description: "Panduan, wawasan, dan artikel edukasi seputar tanah, properti, investasi, serta proses pertanahan.", alternates: { canonical: "/blog" } };
+export const dynamic = "force-dynamic";
 
 const PER_PAGE = 6;
 type SearchParams = { category?: string | string[]; q?: string | string[]; page?: string | string[] };

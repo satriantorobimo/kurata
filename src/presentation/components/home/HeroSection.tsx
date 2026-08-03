@@ -54,8 +54,7 @@ export function HeroSection() {
         <div
           className="w-full h-full bg-cover bg-center"
           style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&h=900&fit=crop')",
+            backgroundImage: "url('/kurata_bg.png')",
           }}
         />
         <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]" />
