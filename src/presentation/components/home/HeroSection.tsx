@@ -48,24 +48,24 @@ export function HeroSection() {
   }
 
   return (
-    <section className="relative w-full min-h-100 pt-16 md:min-h-150 md:pt-20 flex items-center justify-center overflow-hidden bg-surface-container-lowest">
+    <section className="relative w-full min-h-100 pt-16 md:min-h-150 md:pt-20 flex items-center overflow-hidden bg-surface-container-lowest">
       {/* Background Image */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0" aria-hidden="true">
         <div
           className="w-full h-full bg-cover bg-center"
           style={{
             backgroundImage: "url('/kurata_bg.png')",
           }}
         />
-        <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-on-surface/75 via-on-surface/40 to-on-surface/10" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full container-main py-12 md:py-section-gap flex flex-col items-center text-center px-4 md:px-margin">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-primary mb-3 md:mb-4 max-w-3xl">
+      <div className="relative z-10 w-full container-main py-12 md:py-16 flex flex-col items-center text-center px-4 md:px-margin">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white mb-3 md:mb-4 max-w-3xl">
           Ekosistem Pertanahan Terpercaya
         </h1>
-        <p className="text-sm md:text-headline-sm text-on-surface-variant mb-8 md:mb-12 max-w-2xl">
+        <p className="text-sm md:text-headline-sm text-white/80 mb-8 md:mb-12 max-w-2xl">
           Semua kebutuhan pertanahan, dari pencarian hingga transaksi, dalam
           satu platform digital yang aman, transparan, dan profesional.
         </p>
