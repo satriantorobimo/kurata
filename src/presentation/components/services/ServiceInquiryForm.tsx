@@ -3,8 +3,8 @@
 import { useActionState, type InputHTMLAttributes } from "react";
 import { CheckCircle2, LoaderCircle, ShieldCheck } from "lucide-react";
 import { INITIAL_SERVICE_INQUIRY_STATE } from "@/application/dto/ServiceInquiryDTO";
-import { SERVICE_CATALOG } from "@/application/config/serviceCatalog";
 import { submitServiceInquiry } from "@/app/layanan/actions";
+import type { ServiceDefinition } from "@/application/config/serviceCatalog";
 
 const ROLE_OPTIONS = [
   { value: "owner", label: "Pemilik tanah" },
@@ -13,7 +13,7 @@ const ROLE_OPTIONS = [
   { value: "broker", label: "Mitra Kurata" },
 ];
 
-export function ServiceInquiryForm() {
+export function ServiceInquiryForm({ services }: { services: ServiceDefinition[] }) {
   const [state, formAction, pending] = useActionState(
     submitServiceInquiry,
     INITIAL_SERVICE_INQUIRY_STATE,
@@ -26,7 +26,7 @@ export function ServiceInquiryForm() {
         <h3 className="text-headline-md font-headline-md text-on-surface">Permintaan konsultasi diterima</h3>
         <p className="mt-3 text-body-md leading-6 text-on-surface-variant">{state.message}</p>
         <p className="mt-4 text-label-md font-label-md text-primary">Referensi: {state.reference}</p>
-        <p className="mt-5 text-label-sm leading-5 text-on-surface-variant">Data saat ini disimpan dalam mode pengembangan. Hubungkan formulir ke CRM atau basis data sebelum menerima konsultasi produksi.</p>
+        <p className="mt-5 text-label-sm leading-5 text-on-surface-variant">Permintaan Anda telah tersimpan. Tim Kurata akan menindaklanjuti berdasarkan informasi yang Anda berikan.</p>
       </div>
     );
   }
@@ -51,7 +51,7 @@ export function ServiceInquiryForm() {
       </div>
 
       <div className="mt-5 grid gap-5 sm:grid-cols-2">
-        <SelectField id="service" name="service" label="Layanan yang diminati" required error={errors.service} options={SERVICE_CATALOG.map((service) => ({ value: service.id, label: service.title }))} />
+        <SelectField id="service" name="service" label="Layanan yang diminati" required error={errors.service} options={services.map((service) => ({ value: service.id, label: service.title }))} />
         <TextField id="area" name="area" label="Lokasi / area properti" hint="Contoh: Canggu, Badung, Bali" required error={errors.area} />
       </div>
 

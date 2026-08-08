@@ -42,7 +42,7 @@ export function BrokerRegistrationForm() {
         <h3 className="text-headline-md font-headline-md text-on-surface">Pendaftaran diterima</h3>
         <p className="mt-3 text-body-md leading-6 text-on-surface-variant">{state.message}</p>
         <p className="mt-4 text-label-md font-label-md text-primary">Referensi: {state.reference}</p>
-        <p className="mt-5 text-label-sm text-on-surface-variant">Data saat ini disimpan dalam mode pengembangan. Hubungkan formulir ke CRM atau basis data sebelum digunakan untuk pendaftaran produksi.</p>
+        <p className="mt-5 text-label-sm text-on-surface-variant">Pendaftaran Anda telah tersimpan. Tim Kurata akan meninjau informasi yang diajukan.</p>
       </div>
     );
   }

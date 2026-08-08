@@ -13,6 +13,7 @@ export interface AuthContext {
   sessionId: string;
   userId: string;
   role: KurataRole;
+  email: string;
   authenticatedAt: Date;
   mfaCompletedAt: Date | null;
 }
@@ -39,6 +40,7 @@ export async function getCurrentAuthContext(): Promise<AuthContext | null> {
       sessionId: sessions.id,
       userId: users.id,
       role: users.role,
+      email: users.email,
       authenticatedAt: sessions.authenticatedAt,
       mfaCompletedAt: sessions.mfaCompletedAt,
     })

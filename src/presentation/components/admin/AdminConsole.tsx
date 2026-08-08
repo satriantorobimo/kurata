@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { CheckCircle2, ClipboardCheck, Eye, FileCheck2, FileImage, FileText, LayoutDashboard, Search, ShieldCheck, UserRoundCheck, UsersRound, XCircle } from "lucide-react";
-import { ADMIN_DEMO_DATA, type ReviewAttachment, type ReviewRecord, type ReviewStatus } from "@/application/config/adminDemoData";
+import type { ReviewAttachment, ReviewRecord, ReviewStatus } from "@/application/config/adminDemoData";
+import { updateAssetReviewStatus, updateFormReviewStatus, type ReviewActionResult } from "@/app/admin/actions";
 import { cn } from "@/lib/cn";
 
 type Section = "overview" | "users" | "brokers" | "assets" | "content";
@@ -17,14 +18,22 @@ const SECTION_META: Record<Collection, { title: string; eyebrow: string; icon: t
   content: { title: "Konten", eyebrow: "Blog dan bantuan", icon: FileText },
 };
 
+export interface AdminData {
+  users: ReviewRecord[];
+  brokers: ReviewRecord[];
+  assets: ReviewRecord[];
+  content: ReviewRecord[];
+}
+
 function StatusPill({ status }: { status: ReviewStatus }) { return <span className={cn("inline-flex rounded-full px-2.5 py-1 text-label-sm font-label-sm", STATUS_CLASS[status])}>{LABELS[status]}</span>; }
 
-export function AdminConsole() {
+export function AdminConsole({ initialData }: { initialData: AdminData }) {
   const [section, setSection] = useState<Section>("overview");
-  const [data, setData] = useState(ADMIN_DEMO_DATA);
+  const [data, setData] = useState(initialData);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [notice, setNotice] = useState("");
+  const [, startTransition] = useTransition();
   const collection = section === "overview" ? null : section;
   const records = useMemo(() => collection ? data[collection] : [], [collection, data]);
   const filtered = useMemo(() => records.filter((item) => `${item.name} ${item.subtitle}`.toLowerCase().includes(query.toLowerCase())), [records, query]);
@@ -34,8 +43,25 @@ export function AdminConsole() {
 
   const updateStatus = (status: ReviewStatus) => {
     if (!collection || !selected) return;
+    const entityId = selected.entityId ?? selected.id;
+    const previous = data;
     setData((current) => ({ ...current, [collection]: current[collection].map((item) => item.id === selected.id ? { ...item, status } : item) }));
     setNotice(`${selected.name} diperbarui menjadi “${LABELS[status]}”.`);
+
+    const action = collection === "assets"
+      ? updateAssetReviewStatus(entityId, status)
+      : collection === "brokers"
+        ? updateFormReviewStatus(entityId, status)
+        : null;
+
+    if (!action) return;
+    startTransition(async () => {
+      const result: ReviewActionResult = await action;
+      if (!result.ok) {
+        setData(previous);
+        setNotice(result.message);
+      }
+    });
   };
 
   const nav = [
@@ -48,7 +74,7 @@ export function AdminConsole() {
 
   return <div className="min-h-screen bg-background pt-20">
     <div className="container-main py-8 md:py-12">
-      <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">Kurata workspace</p><h1 className="mt-2 text-3xl font-bold tracking-tight text-on-surface md:text-4xl">Pusat Administrasi</h1><p className="mt-2 max-w-2xl text-body-md leading-6 text-on-surface-variant">Tinjau pengguna, kemitraan mitra, listing, dan konten dari satu tempat.</p></div><span className="inline-flex w-fit items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-3 py-2 text-label-sm text-amber-900"><ShieldCheck className="h-4 w-4" />Mode demo — belum terhubung ke akun produksi</span></div>
+      <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">Kurata workspace</p><h1 className="mt-2 text-3xl font-bold tracking-tight text-on-surface md:text-4xl">Pusat Administrasi</h1><p className="mt-2 max-w-2xl text-body-md leading-6 text-on-surface-variant">Tinjau pengguna, kemitraan mitra, listing, dan konten dari satu tempat.</p></div><span className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-3 py-2 text-label-sm text-emerald-900"><ShieldCheck className="h-4 w-4" />Terhubung ke database produksi</span></div>
       {notice && <div className="mb-5 flex items-center justify-between rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-body-md text-primary" role="status"><span>{notice}</span><button onClick={() => setNotice("")} aria-label="Tutup notifikasi"><XCircle className="h-4 w-4" /></button></div>}
       <div className="grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)]"><aside className="h-fit rounded-2xl border border-border-subtle bg-surface-container-lowest p-3 shadow-card"><nav className="flex gap-1 overflow-x-auto lg:flex-col">{nav.map(({ id, label, icon: Icon }) => <button key={id} onClick={() => { setSection(id); setSelectedId(null); setQuery(""); }} className={cn("flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-left text-label-md transition-colors", section === id ? "bg-primary text-on-primary" : "text-on-surface-variant hover:bg-surface-container-low hover:text-primary")}><Icon className="h-5 w-5" />{label}{id !== "overview" && <span className={cn("ml-auto rounded-full px-2 py-0.5 text-[11px]", section === id ? "bg-white/20" : "bg-surface-container-high")}>{data[id].filter((item) => item.status === "pending" || item.status === "under_review").length}</span>}</button>)}</nav></aside>
         <main>{section === "overview" ? <Overview data={data} pendingCount={pendingCount} onNavigate={(next) => setSection(next)} /> : <ReviewSection title={SECTION_META[section].title} eyebrow={SECTION_META[section].eyebrow} records={filtered} total={records.length} query={query} onQuery={setQuery} selected={selected} onSelect={(id) => section === "assets" ? window.location.assign(`/admin/assets/${id}`) : setSelectedId(id)} onUpdate={updateStatus} approveStatus={section === "assets" || section === "content" ? "published" : "verified"} />}</main>
@@ -57,7 +83,7 @@ export function AdminConsole() {
   </div>;
 }
 
-function Overview({ data, pendingCount, onNavigate }: { data: typeof ADMIN_DEMO_DATA; pendingCount: number; onNavigate: (section: Collection) => void }) {
+function Overview({ data, pendingCount, onNavigate }: { data: AdminData; pendingCount: number; onNavigate: (section: Collection) => void }) {
   const cards: { section: Collection; label: string; value: number; hint: string; icon: typeof UsersRound }[] = [
     { section: "users", label: "Pengguna menunggu", value: data.users.filter((x) => x.status === "pending" || x.status === "under_review").length, hint: "Perlu pemeriksaan profil", icon: UsersRound },
     { section: "brokers", label: "Aplikasi mitra", value: data.brokers.filter((x) => x.status === "pending" || x.status === "under_review").length, hint: "Menunggu keputusan kemitraan", icon: UserRoundCheck },

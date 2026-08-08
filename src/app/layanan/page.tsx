@@ -5,6 +5,8 @@ import { ServiceFaq } from "@/presentation/components/services/ServiceFaq";
 import { ServiceGuidance } from "@/presentation/components/services/ServiceGuidance";
 import { ServicesHero } from "@/presentation/components/services/ServicesHero";
 import { ServiceInquiryForm } from "@/presentation/components/services/ServiceInquiryForm";
+import { GetServiceCatalog } from "@/application/use-cases/GetServiceCatalog";
+import { container } from "@/infrastructure/di/container";
 
 export const metadata: Metadata = {
   title: "Layanan Kurata | Kurata",
@@ -21,11 +23,13 @@ const BOUNDARIES = [
   { Icon: ShieldCheck, title: "Data seperlunya", description: "Untuk konsultasi awal, cukup kirim konteks umum. Jangan mengunggah atau mengirim dokumen identitas maupun kepemilikan sensitif." },
 ];
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await new GetServiceCatalog(container.contentSectionRepo).execute();
+
   return (
     <div className="min-h-screen bg-background">
       <ServicesHero />
-      <ServiceCatalog />
+      <ServiceCatalog services={services} />
       <ServiceGuidance />
 
       <section className="bg-surface-container-low py-16 md:py-20" aria-labelledby="service-boundaries-title">
@@ -40,7 +44,7 @@ export default function ServicesPage() {
       <section id="konsultasi" className="container-main scroll-mt-24 py-16 md:py-20" aria-labelledby="service-inquiry-title">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
           <div className="lg:sticky lg:top-28"><p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">Konsultasi awal</p><h2 id="service-inquiry-title" className="mt-2 text-3xl font-bold text-on-surface">Mari Mulai dari Kebutuhan Anda</h2><p className="mt-4 text-body-md leading-7 text-on-surface-variant">Sampaikan gambaran umum properti atau tujuan Anda. Kami akan meninjau konteksnya dan mengarahkan layanan yang sesuai.</p><div className="mt-7 rounded-xl bg-primary p-6 text-on-primary"><BadgeCheck className="h-8 w-8 text-on-primary-container" aria-hidden="true" /><h3 className="mt-4 text-headline-sm font-headline-sm">Mulai dengan informasi yang aman</h3><p className="mt-2 text-body-md leading-6 text-on-primary/80">Tidak perlu mengirim dokumen formal di tahap ini. Apabila dibutuhkan, langkah lanjutan akan dibicarakan melalui kanal yang tepat.</p></div></div>
-          <ServiceInquiryForm />
+          <ServiceInquiryForm services={services} />
         </div>
       </section>
 

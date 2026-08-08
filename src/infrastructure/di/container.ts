@@ -1,10 +1,10 @@
-import { MockPropertyRepository } from "../repositories/MockPropertyRepository";
+import { PostgresPropertyRepository } from "../repositories/PostgresPropertyRepository";
 import { PostgresStatisticRepository } from "../repositories/PostgresStatisticRepository";
-import { MockBrokerApplicationRepository } from "../repositories/MockBrokerApplicationRepository";
-import { MockServiceInquiryRepository } from "../repositories/MockServiceInquiryRepository";
-import { MockInvestmentInquiryRepository } from "../repositories/MockInvestmentInquiryRepository";
+import { PostgresFormRepository } from "../repositories/PostgresFormRepository";
 import { PostgresBlogArticleRepository } from "../repositories/PostgresBlogArticleRepository";
-import { MockSupportRequestRepository } from "../repositories/MockSupportRequestRepository";
+import { PostgresContentSectionRepository } from "../repositories/PostgresContentSectionRepository";
+import { PostgresAdminRepository } from "../repositories/PostgresAdminRepository";
+import { PostgresWorkspaceRepository } from "../repositories/PostgresWorkspaceRepository";
 
 /**
  * Simple Dependency Injection container.
@@ -13,13 +13,16 @@ import { MockSupportRequestRepository } from "../repositories/MockSupportRequest
  * Each repository can evolve independently while the application use cases
  * keep a stable interface.
  */
-const propertyRepo = new MockPropertyRepository();
+const propertyRepo = new PostgresPropertyRepository();
 const statisticRepo = new PostgresStatisticRepository();
-const brokerApplicationRepo = new MockBrokerApplicationRepository();
-const serviceInquiryRepo = new MockServiceInquiryRepository();
-const investmentInquiryRepo = new MockInvestmentInquiryRepository();
+const brokerApplicationRepo = new PostgresFormRepository();
+const serviceInquiryRepo = new PostgresFormRepository();
+const investmentInquiryRepo = new PostgresFormRepository();
 const blogArticleRepo = new PostgresBlogArticleRepository();
-const supportRequestRepo = new MockSupportRequestRepository();
+const supportRequestRepo = new PostgresFormRepository();
+const contentSectionRepo = new PostgresContentSectionRepository();
+const adminRepo = new PostgresAdminRepository();
+const workspaceRepo = new PostgresWorkspaceRepository();
 
 export const container = {
   propertyRepo,
@@ -29,6 +32,9 @@ export const container = {
   investmentInquiryRepo,
   blogArticleRepo,
   supportRequestRepo,
+  contentSectionRepo,
+  adminRepo,
+  workspaceRepo,
 };
 
 export type Container = typeof container;

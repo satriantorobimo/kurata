@@ -1,6 +1,11 @@
 "use server";
 
+import { eq } from "drizzle-orm";
+
 import type { AuthFormState } from "@/application/dto/AuthFormDTO";
+import { hashPassword } from "@/infrastructure/auth/password-hasher";
+import { getDatabase } from "@/infrastructure/database/client";
+import { passwordCredentials, securityEvents, userProfiles, userVerifications, users } from "@/infrastructure/database/schema";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -31,9 +36,42 @@ export async function register(
     return { status: "error", message: "Periksa kembali data pendaftaran Anda.", fieldErrors };
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 450));
+  const database = getDatabase();
+  const [existing] = await database.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+  if (existing) {
+    return { status: "error", fieldErrors: { email: "Email sudah terdaftar. Gunakan email lain atau masuk ke akun Anda." } };
+  }
+
+  const passwordHash = await hashPassword(password);
+  const now = new Date();
+  const [created] = await database
+    .insert(users)
+    .values({
+      email,
+      fullName,
+      phone: phone || null,
+      role: "user",
+      status: "active",
+      emailVerifiedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .returning({ id: users.id });
+
+  await database.insert(passwordCredentials).values({
+    userId: created.id,
+    passwordHash,
+    passwordChangedAt: now,
+    mustChangePassword: false,
+    createdAt: now,
+    updatedAt: now,
+  });
+  await database.insert(userProfiles).values({ userId: created.id });
+  await database.insert(userVerifications).values({ userId: created.id, status: "not_started" });
+  await database.insert(securityEvents).values({ userId: created.id, eventType: "account_registered" });
+
   return {
     status: "success",
-    message: "Data berhasil divalidasi dalam mode demo. Belum ada akun atau password yang disimpan.",
+    message: "Akun berhasil dibuat. Silakan masuk dengan email dan password Anda.",
   };
 }

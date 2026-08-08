@@ -1,0 +1,202 @@
+import "server-only";
+
+import { and, asc, desc, eq, gte, ilike, inArray, lte, or, sql, type SQL } from "drizzle-orm";
+
+import { Area } from "../../domain/value-objects/Area";
+import { Location } from "../../domain/value-objects/Location";
+import { Price } from "../../domain/value-objects/Price";
+import { Property, type PropertyBadge, type CertificateType } from "../../domain/entities/Property";
+import type { PropertyDetail } from "../../domain/entities/PropertyDetail";
+import type {
+  IPropertyRepository,
+  PropertySearchCriteria,
+  PropertySearchResult,
+} from "../../domain/repositories/IPropertyRepository";
+import { getDatabase } from "../database/client";
+import { properties, propertyImages } from "../database/schema";
+
+const VALID_CERTIFICATES = ["SHM", "HGB", "HGU", "HP"] as const;
+const VALID_BADGES = ["exclusive", "broker"] as const;
+
+function isCertificate(value: string): value is CertificateType {
+  return (VALID_CERTIFICATES as readonly string[]).includes(value);
+}
+
+function isBadge(value: string | null): value is PropertyBadge {
+  return value === null || (VALID_BADGES as readonly string[]).includes(value);
+}
+
+function mapRow(row: typeof properties.$inferSelect): Property {
+  if (!isCertificate(row.certificate)) {
+    throw new Error(`Invalid certificate for property ${row.id}: ${row.certificate}`);
+  }
+  if (!isBadge(row.badge)) {
+    throw new Error(`Invalid badge for property ${row.id}: ${row.badge}`);
+  }
+
+  return Property.create({
+    id: row.id,
+    title: row.title,
+    location: Location.of(row.city, row.province),
+    price: Price.fromRupiah(row.priceAmount),
+    area: Area.fromSquareMeters(row.areaSqm),
+    certificate: row.certificate,
+    badge: row.badge,
+    imageUrl: row.imageUrl,
+    isFavorited: row.isFavorited,
+  });
+}
+
+/** Land listings from PostgreSQL, persisted in the content schema. */
+export class PostgresPropertyRepository implements IPropertyRepository {
+  async getRecommended(): Promise<Property[]> {
+    const rows = await getDatabase()
+      .select()
+      .from(properties)
+      .where(eq(properties.isPublished, true))
+      .orderBy(desc(properties.createdAt))
+      .limit(12);
+
+    return rows.map(mapRow);
+  }
+
+  async getById(id: string): Promise<PropertyDetail | null> {
+    const database = getDatabase();
+    const [row, imageRows] = await Promise.all([
+      database.select().from(properties).where(eq(properties.id, id)),
+      database
+        .select()
+        .from(propertyImages)
+        .where(eq(propertyImages.propertyId, id))
+        .orderBy(asc(propertyImages.position)),
+    ]);
+
+    const property = row[0];
+    if (!property || !property.isPublished) return null;
+
+    return {
+      property: mapRow(property),
+      description: property.description ?? "",
+      imageUrls: imageRows.map((image) => image.imageUrl),
+      dimensions: property.dimensions ?? "",
+      zoning: property.zoning ?? "",
+      roadAccess: property.roadAccess ?? "",
+      legalStatus: property.legalStatus ?? "",
+      address: property.address ?? "",
+      facilities: property.facilities ?? [],
+      listedAt: property.listedAt ?? "",
+      contactLabel: property.contactLabel ?? "",
+    };
+  }
+
+  async getRelated(id: string, limit: number): Promise<Property[]> {
+    const database = getDatabase();
+    const [row] = await database.select().from(properties).where(eq(properties.id, id));
+    if (!row) return [];
+
+    const relatedRows = await database
+      .select()
+      .from(properties)
+      .where(
+        and(
+          eq(properties.isPublished, true),
+          sql`${properties.id} != ${id}`,
+          sql`(${properties.province} = ${row.province} OR ${properties.badge} IS NOT DISTINCT FROM ${row.badge})`,
+        ),
+      )
+      .orderBy(sql`CASE WHEN ${properties.province} = ${row.province} AND ${properties.badge} IS NOT DISTINCT FROM ${row.badge} THEN 2 WHEN ${properties.province} = ${row.province} THEN 1 WHEN ${properties.badge} IS NOT DISTINCT FROM ${row.badge} THEN 1 ELSE 0 END DESC`)
+      .limit(Math.max(0, limit));
+
+    return relatedRows.map(mapRow);
+  }
+
+  async getAllIds(): Promise<string[]> {
+    const rows = await getDatabase()
+      .select({ id: properties.id })
+      .from(properties)
+      .where(eq(properties.isPublished, true));
+
+    return rows.map((row) => row.id);
+  }
+
+  async search(criteria: PropertySearchCriteria): Promise<PropertySearchResult> {
+    const database = getDatabase();
+    const query = criteria.query?.trim().toLocaleLowerCase("id-ID") ?? "";
+    const page = Math.max(1, criteria.page ?? 1);
+    const perPage = Math.min(12, Math.max(1, criteria.perPage ?? 6));
+
+    const conditions: SQL[] = [
+      eq(properties.isPublished, true),
+    ];
+
+    if (query) {
+      const searchCondition = or(
+        ilike(properties.title, `%${query}%`),
+        ilike(properties.city, `%${query}%`),
+        ilike(properties.province, `%${query}%`),
+      );
+      if (searchCondition) conditions.push(searchCondition);
+    }
+
+    if (criteria.certificates?.length) {
+      conditions.push(inArray(properties.certificate, criteria.certificates));
+    }
+    if (criteria.badges?.length) {
+      conditions.push(inArray(properties.badge, criteria.badges));
+    }
+    if (criteria.minPrice !== undefined) {
+      conditions.push(gte(properties.priceAmount, criteria.minPrice));
+    }
+    if (criteria.maxPrice !== undefined) {
+      conditions.push(lte(properties.priceAmount, criteria.maxPrice));
+    }
+    if (criteria.minArea !== undefined) {
+      conditions.push(gte(properties.areaSqm, criteria.minArea));
+    }
+    if (criteria.maxArea !== undefined) {
+      conditions.push(lte(properties.areaSqm, criteria.maxArea));
+    }
+
+    const where = and(...conditions);
+
+    const orderBy = (() => {
+      switch (criteria.sort) {
+        case "price-asc":
+          return asc(properties.priceAmount);
+        case "price-desc":
+          return desc(properties.priceAmount);
+        case "area-asc":
+          return asc(properties.areaSqm);
+        case "area-desc":
+          return desc(properties.areaSqm);
+        default:
+          return desc(properties.createdAt);
+      }
+    })();
+
+    const [rows, totalRows] = await Promise.all([
+      database
+        .select()
+        .from(properties)
+        .where(where)
+        .orderBy(orderBy)
+        .limit(perPage)
+        .offset((page - 1) * perPage),
+      database
+        .select({ count: sql<number>`count(*)` })
+        .from(properties)
+        .where(where),
+    ]);
+
+    const total = Number(totalRows[0]?.count ?? 0);
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const safePage = Math.min(page, totalPages);
+
+    return {
+      properties: rows.map(mapRow),
+      total,
+      page: safePage,
+      perPage,
+    };
+  }
+}

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { GetPropertyDetail } from "@/application/use-cases/GetPropertyDetail";
 import { GetRelatedProperties } from "@/application/use-cases/GetRelatedProperties";
 import { container } from "@/infrastructure/di/container";
+import { getCurrentAuthContext } from "@/infrastructure/security/authorization-dal";
 import { Badge } from "@/presentation/components/shared/Badge";
 import { PropertyActions } from "@/presentation/components/detail/PropertyActions";
 import { PropertyContactPanel } from "@/presentation/components/detail/PropertyContactPanel";
@@ -15,13 +16,10 @@ import { absoluteUrl, jsonLdScript } from "@/lib/seo";
 
 type PageParams = Promise<{ id: string }>;
 
+export const dynamic = "force-dynamic";
+
 async function getDetail(id: string) {
   return new GetPropertyDetail(container.propertyRepo).execute(id);
-}
-
-export async function generateStaticParams() {
-  const ids = await container.propertyRepo.getAllIds();
-  return ids.map((id) => ({ id }));
 }
 
 export async function generateMetadata({
@@ -56,6 +54,9 @@ export default async function PropertyDetailPage({
   const { id } = await params;
   const property = await getDetail(id);
   if (!property) notFound();
+
+  const auth = await getCurrentAuthContext();
+  const isFavorite = auth ? await container.workspaceRepo.isFavorited(auth.userId, id) : false;
 
   const relatedProperties = await new GetRelatedProperties(container.propertyRepo).execute(id);
   const propertyUrl = absoluteUrl(`/cari-tanah/${id}`);
@@ -108,7 +109,7 @@ export default async function PropertyDetailPage({
                     {property.location}
                   </div>
                 </div>
-                <PropertyActions title={property.title} initialFavorite={property.isFavorited} />
+                <PropertyActions title={property.title} initialFavorite={isFavorite} propertyId={id} authenticated={Boolean(auth)} />
               </div>
               <p className="text-2xl font-bold text-primary md:text-3xl">{property.price}</p>
               <p className="mt-1 text-label-sm text-on-surface-variant">Referensi listing: {property.id}</p>

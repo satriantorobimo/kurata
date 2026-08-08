@@ -30,7 +30,10 @@ import {
   UtensilsCrossed,
   Warehouse,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { GetInvestasiContent, type InvestasiBroker } from "@/application/use-cases/GetInvestasiContent";
+import { container } from "@/infrastructure/di/container";
 
 export const metadata: Metadata = {
   title: "Potensi Lahan | Kurata",
@@ -38,71 +41,13 @@ export const metadata: Metadata = {
   openGraph: { title: "Potensi Lahan | Kurata", description: "Temukan potensi terbaik di setiap bidang lahan bersama Kurata." },
 };
 
-const CATEGORIES = [
-  { Icon: Factory, label: "Industri" },
-  { Icon: Fuel, label: "SPBU" },
-  { Icon: Warehouse, label: "Gudang" },
-  { Icon: Building2, label: "Perkantoran" },
-  { Icon: Store, label: "Ruko" },
-  { Icon: Building, label: "Hotel" },
-  { Icon: UtensilsCrossed, label: "Restoran" },
-  { Icon: Sprout, label: "Pertanian" },
-  { Icon: Home, label: "Perumahan" },
-  { Icon: TreePalm, label: "Lahan Kosong" },
-];
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  Factory, Fuel, Warehouse, Building2, Store, Building, UtensilsCrossed, Sprout, Home, TreePalm,
+};
 
-const POTENTIAL_LISTINGS = [
-  { title: "Lahan Strategis Cikarang", location: "Cikarang, Jawa Barat", area: "4.500 m²", price: "Rp 2.300.000", imageUrl: "https://images.unsplash.com/photo-1500534623283-312aade485b7?w=800&h=600&fit=crop" },
-  { title: "Tanah Dekat Tol Cibitung", location: "Cibitung, Jawa Barat", area: "2.800 m²", price: "Rp 1.850.000", imageUrl: "https://images.unsplash.com/photo-1494526585095-c41746248156?w=800&h=600&fit=crop" },
-  { title: "Lahan Pesisir Sidoarjo", location: "Sidoarjo, Jawa Timur", area: "6.200 m²", price: "Rp 3.100.000", imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=600&fit=crop" },
-  { title: "Kavling Komersial Palembang", location: "Palembang, Sumatera Selatan", area: "1.900 m²", price: "Rp 1.400.000", imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop" },
-  { title: "Tanah Corridor Sukabumi", location: "Sukabumi, Jawa Barat", area: "3.400 m²", price: "Rp 1.950.000", imageUrl: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop" },
-];
-
-const FEATURES = [
-  { Icon: ArrowLeftRight, label: "Gerbang Tol" },
-  { Icon: MoveHorizontal, label: "Jalan Lebar" },
-  { Icon: Truck, label: "Truk Besar" },
-  { Icon: Factory, label: "Dekat Kawasan Industri" },
-  { Icon: Car, label: "Lalu Lintas Padat" },
-];
-
-const BUSINESS_OPPORTUNITIES = [
-  "Volume kendaraan tinggi 24 jam",
-  "Kebutuhan bahan bakar terus tumbuh",
-  "Ekspansi kawasan industri sekitar",
-  "Potensi pendapatan sewa lahan",
-];
-
-const AREA_ANALYSIS = [
-  { label: "Aksesibilitas", rating: 5 },
-  { label: "Potensi lalu lintas", rating: 5 },
-  { label: "Pertumbuhan area", rating: 4 },
-  { label: "Daya beli sekitar", rating: 4 },
-];
-
-const INFRASTRUCTURE = [
-  { label: "Gerbang tol terdekat", distance: "1,2 km" },
-  { label: "Terminal angkutan", distance: "2,8 km" },
-  { label: "Kawasan industri", distance: "2,1 km" },
-  { label: "Rumah sakit", distance: "5,6 km" },
-  { label: "Pusat kota", distance: "8,4 km" },
-];
-
-const SIMILAR_LISTINGS = [
-  { title: "Lahan Jl. Raya Serang", location: "Serang, Banten", price: "Rp 1.650.000", imageUrl: "https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=800&h=600&fit=crop" },
-  { title: "Kavling Semarang Barat", location: "Semarang, Jawa Tengah", price: "Rp 1.250.000", imageUrl: "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=800&h=600&fit=crop" },
-  { title: "Tanah Akses Tol Kertosono", location: "Kertosono, Jawa Timur", price: "Rp 2.100.000", imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop" },
-  { title: "Lahan Medan Marelan", location: "Medan, Sumatera Utara", price: "Rp 1.150.000", imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop" },
-];
-
-const SCORE_METRICS = [
-  { label: "Aksesibilitas", score: 4.9 },
-  { label: "Lokasi strategis", score: 4.7 },
-  { label: "Potensi bisnis", score: 4.8 },
-  { label: "Infrastruktur", score: 4.6 },
-  { label: "Legalitas", score: 5.0 },
-];
+const FEATURE_ICONS: Record<string, LucideIcon> = {
+  ArrowLeftRight, MoveHorizontal, Truck, Factory, Car,
+};
 
 function SectionHeading({ eyebrow, title, id }: { eyebrow: string; title: string; id?: string }) {
   return (
@@ -123,7 +68,9 @@ function StarRating({ rating, size = "h-5 w-5" }: { rating: number; size?: strin
   );
 }
 
-export default function InvestmentPage() {
+export default async function InvestmentPage() {
+  const content = await new GetInvestasiContent(container.contentSectionRepo).execute();
+
   return (
     <div className="min-h-screen bg-background">
       <section className="relative flex min-h-100 w-full items-center overflow-hidden bg-surface-container-lowest pt-16 md:min-h-150 md:pt-20">
@@ -174,21 +121,24 @@ export default function InvestmentPage() {
                 </Link>
               </div>
               <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {CATEGORIES.map(({ Icon, label }) => (
-                  <Link key={label} href="/cari-tanah" className="group flex flex-col items-center gap-2 rounded-xl border border-border-subtle bg-surface-container-lowest px-4 py-5 text-center shadow-card transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-card-hover">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                    <span className="min-w-0 break-words text-[13px] font-label-sm leading-5 text-on-surface">{label}</span>
-                  </Link>
-                ))}
+                {content.categories.map(({ icon, label }) => {
+                  const Icon = CATEGORY_ICONS[icon] ?? Home;
+                  return (
+                    <Link key={label} href="/cari-tanah" className="group flex flex-col items-center gap-2 rounded-xl border border-border-subtle bg-surface-container-lowest px-4 py-5 text-center shadow-card transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-card-hover">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary">
+                        <Icon className="h-5 w-5" aria-hidden="true" />
+                      </span>
+                      <span className="min-w-0 break-words text-[13px] font-label-sm leading-5 text-on-surface">{label}</span>
+                    </Link>
+                  );
+                })}
               </div>
             </section>
 
             <section aria-labelledby="listing-title">
               <SectionHeading eyebrow="Rekomendasi untuk Anda" title="Lahan Potensial untuk SPBU" id="listing-title" />
               <div className="mt-8 flex gap-4 overflow-x-auto pb-2 snap-x">
-                {POTENTIAL_LISTINGS.map((listing) => (
+                {content.listings.map((listing) => (
                   <article key={listing.title} className="group w-72 shrink-0 snap-start overflow-hidden rounded-xl border border-border-subtle bg-surface-container-lowest shadow-card transition-shadow hover:shadow-card-hover">
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <div className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${listing.imageUrl}')` }} role="img" aria-label={listing.title} />
@@ -218,14 +168,17 @@ export default function InvestmentPage() {
             <section aria-labelledby="features-title" className="rounded-xl border border-border-subtle bg-surface-container-lowest p-6 shadow-card sm:p-8">
               <SectionHeading eyebrow="Alasan utama" title="Kenapa Lahan Ini Berpotensi?" id="features-title" />
               <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-5">
-                {FEATURES.map(({ Icon, label }) => (
-                  <div key={label} className="flex flex-col items-center gap-3 text-center">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                      <Icon className="h-6 w-6" aria-hidden="true" />
-                    </span>
-                    <span className="text-label-md font-label-md leading-5 text-on-surface">{label}</span>
-                  </div>
-                ))}
+                {content.features.map(({ icon, label }) => {
+                  const Icon = FEATURE_ICONS[icon] ?? Car;
+                  return (
+                    <div key={label} className="flex flex-col items-center gap-3 text-center">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <Icon className="h-6 w-6" aria-hidden="true" />
+                      </span>
+                      <span className="text-label-md font-label-md leading-5 text-on-surface">{label}</span>
+                    </div>
+                  );
+                })}
               </div>
             </section>
 
@@ -236,7 +189,7 @@ export default function InvestmentPage() {
                   Peluang Bisnis
                 </h3>
                 <ul className="mt-4 space-y-3">
-                  {BUSINESS_OPPORTUNITIES.map((item) => (
+                  {content.opportunities.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-body-md leading-6 text-on-surface-variant">
                       <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
                       {item}
@@ -250,7 +203,7 @@ export default function InvestmentPage() {
                   Analisis Wilayah
                 </h3>
                 <ul className="mt-4 space-y-4">
-                  {AREA_ANALYSIS.map(({ label, rating }) => (
+                  {content.areaAnalysis.map(({ label, rating }) => (
                     <li key={label} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                       <span className="text-body-md text-on-surface-variant">{label}</span>
                       <StarRating rating={rating} />
@@ -264,7 +217,7 @@ export default function InvestmentPage() {
                   Infrastruktur Sekitar
                 </h3>
                 <ul className="mt-4 space-y-3">
-                  {INFRASTRUCTURE.map(({ label, distance }) => (
+                  {content.infrastructure.map(({ label, distance }) => (
                     <li key={label} className="flex items-center justify-between gap-3 text-body-md">
                       <span className="text-on-surface-variant">{label}</span>
                       <span className="flex shrink-0 items-center gap-1 font-label-md text-on-surface">
@@ -282,10 +235,10 @@ export default function InvestmentPage() {
                 <div>
                   <p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">Insight Kurata</p>
                   <h2 id="insight-title" className="mt-2 text-balance text-xl font-bold leading-snug tracking-tight text-on-surface sm:text-2xl">
-                    Peluang Tinggi di Koridor Tol Jakarta–Cikampek
+                    {content.insightTitle}
                   </h2>
                   <p className="mt-3 text-body-md leading-7 text-on-surface-variant">
-                    Berdasarkan analisis kami, lahan di koridor ini dilintasi hingga 120.000 kendaraan per hari, ditunjang akses tol ganda dan pertumbuhan kawasan industri. Kombinasi ini menjadikannya lokasi ideal untuk pembangunan SPBU.
+                    {content.insightDescription}
                   </p>
                 </div>
                 <div className="relative hidden h-56 lg:block" aria-hidden="true">
@@ -313,7 +266,7 @@ export default function InvestmentPage() {
                 </Link>
               </div>
               <div className="mt-8 flex gap-4 overflow-x-auto pb-2 snap-x">
-                {SIMILAR_LISTINGS.map(({ title, location, price, imageUrl }) => (
+                {content.similarListings.map(({ title, location, price, imageUrl }) => (
                   <Link key={title} href="/cari-tanah" className="group w-56 shrink-0 snap-start overflow-hidden rounded-xl border border-border-subtle bg-surface-container-lowest shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover">
                     <div className="relative aspect-[16/10] overflow-hidden">
                       <div className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${imageUrl}')` }} role="img" aria-label={title} />
@@ -336,7 +289,7 @@ export default function InvestmentPage() {
             <section aria-labelledby="score-title" className="rounded-xl border border-border-subtle bg-surface-container-lowest p-6 shadow-card">
               <h2 id="score-title" className="text-headline-md font-headline-md text-on-surface">Skor Potensi Lahan</h2>
               <div className="mt-5 flex items-end gap-3">
-                <span className="text-5xl font-bold tracking-tight text-on-surface">4.8</span>
+                <span className="text-5xl font-bold tracking-tight text-on-surface">{content.score.toFixed(1)}</span>
                 <span className="pb-1.5 text-label-md text-on-surface-variant">/ 5</span>
               </div>
               <div className="mt-2 flex items-center gap-1">
@@ -345,7 +298,7 @@ export default function InvestmentPage() {
                 ))}
               </div>
               <ul className="mt-6 space-y-5">
-                {SCORE_METRICS.map(({ label, score }) => (
+                {content.scoreMetrics.map(({ label, score }) => (
                   <li key={label}>
                     <div className="flex items-center justify-between text-label-md font-label-md">
                       <span className="text-on-surface">{label}</span>
@@ -363,30 +316,7 @@ export default function InvestmentPage() {
               </button>
             </section>
 
-            <section aria-labelledby="partner-title" className="rounded-xl border border-border-subtle bg-surface-container-lowest p-6 shadow-card">
-              <h2 id="partner-title" className="text-headline-md font-headline-md text-on-surface">Tanya Mitra Kurata</h2>
-              <div className="mt-5 flex items-center gap-4">
-                <Image src="/broker.png" alt="Foto Rizky Pratama" width={64} height={64} className="h-16 w-16 rounded-full border border-border-subtle object-cover" />
-                <div>
-                  <p className="font-headline-sm text-headline-sm text-on-surface">Rizky Pratama</p>
-                  <p className="text-label-sm text-on-surface-variant">Mitra Kurata · Jakarta</p>
-                  <p className="mt-1 flex items-center gap-1 text-label-md font-label-md text-on-surface">
-                    <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden="true" />
-                    5.0
-                    <span className="font-normal text-on-surface-variant">(128 ulasan)</span>
-                  </p>
-                </div>
-              </div>
-              <div className="mt-6 space-y-3">
-                <button type="button" className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-label-md font-label-md text-on-primary transition-colors hover:bg-primary/90">
-                  <MessageCircle className="h-4 w-4" aria-hidden="true" />
-                  Hubungi via WhatsApp
-                </button>
-                <button type="button" className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary px-4 py-3 text-label-md font-label-md text-primary transition-colors hover:bg-primary/5">
-                  Jadwalkan Survey
-                </button>
-              </div>
-            </section>
+            {content.broker && <BrokerCard broker={content.broker} />}
           </aside>
         </div>
       </main>
@@ -413,5 +343,34 @@ export default function InvestmentPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+function BrokerCard({ broker }: { broker: InvestasiBroker }) {
+  return (
+    <section aria-labelledby="partner-title" className="rounded-xl border border-border-subtle bg-surface-container-lowest p-6 shadow-card">
+      <h2 id="partner-title" className="text-headline-md font-headline-md text-on-surface">Tanya Mitra Kurata</h2>
+      <div className="mt-5 flex items-center gap-4">
+        <Image src={broker.imagePath} alt={`Foto ${broker.name}`} width={64} height={64} className="h-16 w-16 rounded-full border border-border-subtle object-cover" />
+        <div>
+          <p className="font-headline-sm text-headline-sm text-on-surface">{broker.name}</p>
+          <p className="text-label-sm text-on-surface-variant">Mitra Kurata · {broker.location}</p>
+          <p className="mt-1 flex items-center gap-1 text-label-md font-label-md text-on-surface">
+            <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden="true" />
+            {broker.rating.toFixed(1)}
+            <span className="font-normal text-on-surface-variant">({broker.reviewCount} ulasan)</span>
+          </p>
+        </div>
+      </div>
+      <div className="mt-6 space-y-3">
+        <button type="button" className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-label-md font-label-md text-on-primary transition-colors hover:bg-primary/90">
+          <MessageCircle className="h-4 w-4" aria-hidden="true" />
+          Hubungi via WhatsApp
+        </button>
+        <button type="button" className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-primary px-4 py-3 text-label-md font-label-md text-primary transition-colors hover:bg-primary/5">
+          Jadwalkan Survey
+        </button>
+      </div>
+    </section>
   );
 }

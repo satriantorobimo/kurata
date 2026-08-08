@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Bell, BriefcaseBusiness, Heart, LayoutDashboard, Menu, MessageSquare, ShieldCheck, UserRound, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -29,9 +29,11 @@ export function WorkspaceLayout({ kind, title, description, children }: { kind: 
   const nav = kind === "user" ? USER_NAV : BROKER_NAV;
 
   // Close the mobile drawer whenever the route changes.
-  useEffect(() => {
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
     setMobileNavOpen(false);
-  }, [pathname]);
+  }
 
   const renderNav = (onNavigate?: () => void) => (
     <nav className="flex-col gap-1 pt-5">

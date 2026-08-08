@@ -31,6 +31,7 @@ const passwordOptions = {
 
 const accounts = [
   { email: "demo.user@kurata.test", fullName: "Demo User", role: "user", passwordKey: "DEMO_USER_PASSWORD" },
+  { email: "broker.user@kurata.test", fullName: "Demo Broker", role: "broker", passwordKey: "DEMO_BROKER_PASSWORD" },
   { email: "admin@kurata.test", fullName: "Kurata Admin", role: "admin", passwordKey: "DEMO_ADMIN_PASSWORD" },
   { email: "master.admin@kurata.test", fullName: "Kurata Master Admin", role: "super_admin", passwordKey: "DEMO_MASTER_ADMIN_PASSWORD" },
 ];

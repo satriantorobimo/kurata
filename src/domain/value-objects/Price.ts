@@ -43,8 +43,8 @@ export class Price {
   }
 
   private formatNumber(n: number): string {
-    // Strip trailing zeros after decimal
-    const formatted = n.toFixed(1);
-    return formatted.replace(/\.0$/, "");
+    // Indonesian decimal separator is a comma; strip trailing zeros.
+    const formatted = n.toFixed(1).replace(/\.0$/, "");
+    return formatted.replace(".", ",");
   }
 }
