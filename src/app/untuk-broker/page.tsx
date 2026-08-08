@@ -8,11 +8,11 @@ import { BrokerProcess } from "@/presentation/components/broker/BrokerProcess";
 import { BrokerRegistrationForm } from "@/presentation/components/broker/BrokerRegistrationForm";
 
 export const metadata: Metadata = {
-  title: "Untuk Broker | Kurata",
-  description: "Bergabunglah sebagai Broker Partner Kurata dan kembangkan pemasaran properti Anda bersama jaringan profesional.",
+  title: "Mitra Kurata | Kurata",
+  description: "Bergabunglah sebagai Mitra Kurata dan kembangkan pemasaran properti Anda bersama jaringan profesional.",
   openGraph: {
-    title: "Untuk Broker | Kurata",
-    description: "Program kemitraan Kurata untuk broker properti yang ingin tumbuh secara profesional dan transparan.",
+    title: "Mitra Kurata | Kurata",
+    description: "Program kemitraan Kurata untuk profesional properti yang ingin tumbuh secara profesional dan transparan.",
   },
 };
 
@@ -34,9 +34,9 @@ export default function BrokerPage() {
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="rounded-2xl bg-primary p-8 text-on-primary sm:p-10">
             <UsersRound className="mb-6 h-10 w-10 text-on-primary-container" aria-hidden="true" />
-            <p className="text-label-sm font-label-sm uppercase tracking-wider text-on-primary-container">Untuk broker yang siap bertumbuh</p>
+            <p className="text-label-sm font-label-sm uppercase tracking-wider text-on-primary-container">Untuk Mitra Kurata yang siap bertumbuh</p>
             <h2 id="broker-requirements-title" className="mt-3 text-3xl font-bold leading-tight">Kemitraan Dibangun dengan Kejelasan dan Kepercayaan</h2>
-            <p className="mt-5 leading-7 text-on-primary/80">Kurata membantu mempertemukan kualitas listing, proses komunikasi yang baik, dan broker yang berkomitmen terhadap informasi pertanahan yang transparan.</p>
+            <p className="mt-5 leading-7 text-on-primary/80">Kurata membantu mempertemukan kualitas listing, proses komunikasi yang baik, dan Mitra Kurata yang berkomitmen terhadap informasi pertanahan yang transparan.</p>
           </div>
           <div>
             <p className="mb-2 text-label-sm font-label-sm uppercase tracking-wider text-primary">Syarat pendaftaran</p>
@@ -54,9 +54,9 @@ export default function BrokerPage() {
         <div className="container-main grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
           <div className="lg:sticky lg:top-28">
             <p className="mb-2 text-label-sm font-label-sm uppercase tracking-wider text-primary">Mulai kemitraan</p>
-            <h2 id="broker-registration-title" className="text-3xl font-bold text-on-surface">Daftar Menjadi Broker Partner</h2>
+            <h2 id="broker-registration-title" className="text-3xl font-bold text-on-surface">Daftar Menjadi Mitra Kurata</h2>
             <p className="mt-4 text-body-md leading-7 text-on-surface-variant">Kirim informasi awal Anda. Tim Kurata akan menggunakan data ini sebagai dasar peninjauan dan proses onboarding berikutnya.</p>
-            <Link href="/broker/dashboard" className="mt-5 inline-flex text-label-md font-label-md text-primary hover:underline">Sudah menjadi Broker Partner? Buka dashboard →</Link>
+            <Link href="/broker/dashboard" className="mt-5 inline-flex text-label-md font-label-md text-primary hover:underline">Sudah menjadi Mitra Kurata? Buka dashboard →</Link>
             <div className="mt-7 rounded-xl border border-primary/15 bg-surface-container-lowest p-5">
               <div className="flex gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" /><div><h3 className="text-label-md font-label-md text-on-surface">Privasi dan keamanan data</h3><p className="mt-1 text-label-sm leading-5 text-on-surface-variant">Hanya kirim data kontak dan profil profesional. Dokumen sensitif akan diminta melalui proses aman bila memang diperlukan.</p></div></div>
             </div>

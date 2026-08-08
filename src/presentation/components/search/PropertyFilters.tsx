@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 const CERTIFICATES = ["SHM", "HGB", "HGU", "HP"] as const;
 const BADGES = [
   { value: "exclusive", label: "Exclusive Kurata" },
-  { value: "broker", label: "Broker Partner" },
+  { value: "broker", label: "Mitra Kurata" },
 ] as const;
 
 interface PropertyFiltersProps {

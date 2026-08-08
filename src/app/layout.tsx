@@ -17,9 +17,9 @@ export const metadata: Metadata = {
   description:
     "Semua kebutuhan pertanahan, dari pencarian hingga transaksi, dalam satu platform digital yang aman, transparan, dan profesional.",
   icons: {
-    icon: [{ url: "/logo.png", type: "image/png" }],
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: [{ url: "/favicon.JPG", type: "image/jpeg" }],
+    shortcut: "/favicon.JPG",
+    apple: "/favicon.JPG",
   },
   openGraph: {
     title: "Kurata — Ekosistem Pertanahan Terpercaya",

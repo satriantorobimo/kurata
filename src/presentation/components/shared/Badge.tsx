@@ -14,7 +14,7 @@ const variantClasses: Record<BadgeVariant, string> = {
 
 const variantLabels: Record<BadgeVariant, string> = {
   exclusive: "Exclusive Kurata",
-  broker: "Broker Partner",
+  broker: "Mitra Kurata",
 };
 
 export function Badge({ variant, className }: BadgeProps) {

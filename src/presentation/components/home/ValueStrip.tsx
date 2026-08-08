@@ -17,8 +17,8 @@ const VALUE_ITEMS: ValueItem[] = [
   { icon: ShieldCheck, label: "Terpercaya", sublabel: "Data terverifikasi" },
   { icon: Shield, label: "Aman", sublabel: "Transaksi terlindungi" },
   { icon: ScrollText, label: "Transparan", sublabel: "Informasi jelas" },
-  { icon: BadgeCheck, label: "Profesional", sublabel: "Broker berpengalaman" },
-  { icon: Users, label: "Untuk Semua", sublabel: "Pemilik, Broker, Investor" },
+  { icon: BadgeCheck, label: "Profesional", sublabel: "Mitra Kurata berpengalaman" },
+  { icon: Users, label: "Untuk Semua", sublabel: "Pemilik, Mitra Kurata, Investor" },
 ];
 
 export function ValueStrip() {

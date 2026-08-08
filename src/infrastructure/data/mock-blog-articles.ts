@@ -111,7 +111,7 @@ export const mockBlogArticles: BlogArticle[] = [
   },
   {
     slug: "memilih-broker-partner",
-    title: "Hal yang Perlu Dipertimbangkan Saat Bekerja dengan Broker Properti",
+    title: "Hal yang Perlu Dipertimbangkan Saat Bekerja dengan Mitra Kurata",
     excerpt: "Komunikasi yang jelas, data listing yang rapi, dan ekspektasi yang selaras membuat proses pemasaran lebih terarah.",
     category: "pemilik-broker",
     author: "Tim Kurata",
@@ -124,7 +124,7 @@ export const mockBlogArticles: BlogArticle[] = [
     sections: [
       { heading: "Selaraskan tujuan pemasaran", paragraphs: ["Diskusikan area target, informasi yang dapat dibagikan, cara komunikasi, dan ekspektasi proses sejak awal. Catatan tertulis membantu semua pihak merujuk pada informasi yang sama."] },
       { heading: "Sediakan informasi yang konsisten", paragraphs: ["Informasi listing yang berubah-ubah membuat proses lebih sulit. Perbarui data secara bertanggung jawab ketika ada perubahan harga, status, atau ketersediaan."] },
-      { heading: "Tetap jalankan verifikasi", paragraphs: ["Broker dapat membantu pemasaran dan komunikasi, tetapi proses verifikasi profesional tetap penting sebelum tahap keputusan dan transaksi."] },
+      { heading: "Tetap jalankan verifikasi", paragraphs: ["Mitra Kurata dapat membantu pemasaran dan komunikasi, tetapi proses verifikasi profesional tetap penting sebelum tahap keputusan dan transaksi."] },
     ],
   },
 ];

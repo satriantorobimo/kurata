@@ -37,7 +37,7 @@ export function ActiveFilters({
     ...badges.map((value) => ({
       key: "badge",
       value,
-      label: value === "exclusive" ? "Exclusive Kurata" : "Broker Partner",
+      label: value === "exclusive" ? "Exclusive Kurata" : "Mitra Kurata",
     })),
     ...(minPrice !== undefined ? [{ key: "minPrice", label: `Harga min. Rp ${formatNumber(minPrice)}` }] : []),
     ...(maxPrice !== undefined ? [{ key: "maxPrice", label: `Harga maks. Rp ${formatNumber(maxPrice)}` }] : []),

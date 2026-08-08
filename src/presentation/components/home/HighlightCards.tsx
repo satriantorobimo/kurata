@@ -15,18 +15,18 @@ interface HighlightCardData {
 
 const HIGHLIGHT_CARDS: HighlightCardData[] = [
   {
-    title: "Broker Partner",
-    description: "Pasarkan tanah Anda melalui jaringan broker profesional Kurata.",
+    title: "Mitra Kurata",
+    description: "Pasarkan tanah Anda melalui jaringan profesional Kurata.",
     benefits: [
       "Jangkauan Lebih Luas",
       "Proses Lebih Mudah",
-      "Bersama Broker Terpercaya",
+      "Bersama Mitra Kurata Terpercaya",
     ],
-    ctaLabel: "Jadi Broker Partner",
+    ctaLabel: "Jadi Mitra Kurata",
     ctaHref: "/untuk-broker",
     icon: "handshake",
     imageSrc: "/broker.png",
-    imageAlt: "Ilustrasi Broker Partner Kurata",
+    imageAlt: "Ilustrasi Mitra Kurata",
   },
   {
     title: "Exclusive Kurata",

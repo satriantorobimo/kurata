@@ -33,10 +33,10 @@ export interface BlogArticle {
 
 export const BLOG_CATEGORY_LABELS: Record<BlogCategory, string> = {
   "panduan-tanah": "Panduan Tanah",
-  investasi: "Investasi",
+  investasi: "Potensi Lahan",
   legalitas: "Legalitas & Dokumen",
   "wawasan-pasar": "Wawasan Pasar",
-  "pemilik-broker": "Pemilik & Broker",
+  "pemilik-broker": "Pemilik & Mitra Kurata",
 };
 
 export function isBlogCategory(value: string | undefined): value is BlogCategory {

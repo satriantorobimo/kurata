@@ -25,7 +25,7 @@ const SPECIALIZATION_LABELS: Record<(typeof BROKER_SPECIALIZATIONS)[number], str
 };
 
 const BROKER_TYPE_LABELS: Record<(typeof BROKER_TYPES)[number], string> = {
-  independent: "Broker independen",
+  independent: "Mitra Kurata independen",
   agency: "Bagian dari agency",
 };
 
@@ -53,7 +53,7 @@ export function BrokerRegistrationForm() {
     <form action={formAction} className="rounded-xl border border-border-subtle bg-surface-container-lowest p-6 shadow-card sm:p-8">
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
       <div className="mb-7">
-        <h2 className="text-headline-md font-headline-md text-on-surface">Formulir Pendaftaran Broker</h2>
+        <h2 className="text-headline-md font-headline-md text-on-surface">Formulir Pendaftaran Mitra Kurata</h2>
         <p className="mt-2 text-body-md text-on-surface-variant">Lengkapi data berikut untuk memulai proses peninjauan awal.</p>
       </div>
 
@@ -72,7 +72,7 @@ export function BrokerRegistrationForm() {
 
       <div className="mt-5 grid gap-5 sm:grid-cols-2">
         <SelectField id="experienceLevel" name="experienceLevel" label="Pengalaman di bidang properti" required error={errors.experienceLevel} options={BROKER_EXPERIENCE_LEVELS.map((value) => ({ value, label: EXPERIENCE_LABELS[value] }))} />
-        <SelectField id="brokerType" name="brokerType" label="Jenis broker" required error={errors.brokerType} options={BROKER_TYPES.map((value) => ({ value, label: BROKER_TYPE_LABELS[value] }))} />
+        <SelectField id="brokerType" name="brokerType" label="Jenis mitra" required error={errors.brokerType} options={BROKER_TYPES.map((value) => ({ value, label: BROKER_TYPE_LABELS[value] }))} />
       </div>
 
       <fieldset className="mt-6">
@@ -100,7 +100,7 @@ export function BrokerRegistrationForm() {
 
       <label className="mt-6 flex cursor-pointer items-start gap-3 text-body-md text-on-surface-variant">
         <input type="checkbox" name="acceptedTerms" className="mt-1 h-4 w-4 shrink-0 rounded border-outline text-primary focus:ring-primary" />
-        <span>Saya menyetujui data ini digunakan untuk proses peninjauan pendaftaran Broker Partner Kurata dan memahami bahwa data perlu diverifikasi kembali.</span>
+        <span>Saya menyetujui data ini digunakan untuk proses peninjauan pendaftaran Mitra Kurata dan memahami bahwa data perlu diverifikasi kembali.</span>
       </label>
       <FieldError id="acceptedTerms-error" message={errors.acceptedTerms} />
 

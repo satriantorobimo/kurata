@@ -1,6 +1,6 @@
 const QUESTIONS = [
-  { question: "Apakah pendaftaran Broker Partner berbayar?", answer: "Pendaftaran awal tidak dipungut biaya. Ketentuan layanan lanjutan akan diinformasikan secara transparan saat onboarding." },
-  { question: "Apakah broker independen dapat mendaftar?", answer: "Ya. Broker independen maupun broker yang tergabung dalam agency dapat mengajukan pendaftaran." },
+  { question: "Apakah pendaftaran Mitra Kurata berbayar?", answer: "Pendaftaran awal tidak dipungut biaya. Ketentuan layanan lanjutan akan diinformasikan secara transparan saat onboarding." },
+  { question: "Apakah Mitra Kurata independen dapat mendaftar?", answer: "Ya. Mitra Kurata independen maupun yang tergabung dalam agency dapat mengajukan pendaftaran." },
   { question: "Berapa lama proses peninjauan pendaftaran?", answer: "Waktu peninjauan bergantung pada kelengkapan data dan proses verifikasi yang dibutuhkan." },
   { question: "Apakah saya dapat mendaftarkan lebih dari satu area?", answer: "Ya. Jelaskan seluruh area operasional utama Anda di formulir pendaftaran." },
 ];

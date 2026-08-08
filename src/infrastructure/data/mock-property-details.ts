@@ -30,6 +30,6 @@ export function createMockPropertyDetail(property: Property): PropertyDetail {
     address: `${property.location.toDisplayString()}, Indonesia`,
     facilities: FACILITIES,
     listedAt: "Diperbarui hari ini",
-    contactLabel: property.badge === "broker" ? "Broker Partner Kurata" : "Tim Kurata",
+    contactLabel: property.badge === "broker" ? "Mitra Kurata" : "Tim Kurata",
   };
 }

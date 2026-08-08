@@ -4,7 +4,7 @@ import type { LucideIcon } from "lucide-react";
 const AUDIENCES: { icon: LucideIcon; title: string; description: string; items: string[] }[] = [
   { icon: Building2, title: "Pemilik Tanah", description: "Siapkan pemasaran, informasi listing, dan kebutuhan pendampingan awal.", items: ["Pemasaran properti", "Estimasi indikatif", "Koneksi broker"] },
   { icon: UsersRound, title: "Pembeli & Investor", description: "Pahami pilihan tanah dan persiapan yang dibutuhkan sebelum mengambil keputusan.", items: ["Pencarian tanah", "Pemeriksaan informasi", "Panduan transaksi"] },
-  { icon: MessageSquareText, title: "Broker Properti", description: "Petakan kebutuhan klien dan buka peluang kolaborasi yang relevan.", items: ["Koneksi broker", "Informasi listing", "Panduan proses"] },
+  { icon: MessageSquareText, title: "Mitra Kurata", description: "Petakan kebutuhan klien dan buka peluang kolaborasi yang relevan.", items: ["Koneksi mitra", "Informasi listing", "Panduan proses"] },
 ];
 
 const STEPS: { icon: LucideIcon; title: string; description: string }[] = [

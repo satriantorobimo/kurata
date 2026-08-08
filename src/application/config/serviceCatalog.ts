@@ -47,8 +47,8 @@ export const SERVICE_CATALOG: ServiceDefinition[] = [
   },
   {
     id: "broker-connection",
-    title: "Koneksi Broker Partner",
-    shortTitle: "Temukan Broker",
+    title: "Koneksi Mitra Kurata",
+    shortTitle: "Temukan Mitra",
     description: "Temukan kemungkinan koneksi dengan broker yang sesuai dengan area dan fokus properti Anda.",
     audience: "Pemilik, pembeli, dan investor",
     deliverables: ["Pemetaan area", "Pertimbangan spesialisasi", "Pengantar awal kemitraan"],

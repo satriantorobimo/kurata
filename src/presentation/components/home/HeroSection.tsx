@@ -19,7 +19,7 @@ const FILTER_CHIPS: FilterChip[] = [
   { id: "luas-tanah", label: "Luas Tanah", icon: "chevron" },
   { id: "harga", label: "Harga", icon: "chevron" },
   { id: "peruntukan", label: "Peruntukan", icon: "chevron" },
-  { id: "broker", label: "Broker Partner", param: "badge", value: "broker" },
+  { id: "broker", label: "Mitra Kurata", param: "badge", value: "broker" },
   { id: "exclusive", label: "Exclusive Kurata", param: "badge", value: "exclusive" },
 ];
 

@@ -10,7 +10,7 @@ const ROLE_OPTIONS = [
   { value: "owner", label: "Pemilik tanah" },
   { value: "buyer", label: "Pembeli" },
   { value: "investor", label: "Investor" },
-  { value: "broker", label: "Broker" },
+  { value: "broker", label: "Mitra Kurata" },
 ];
 
 export function ServiceInquiryForm() {

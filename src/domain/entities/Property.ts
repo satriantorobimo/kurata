@@ -57,7 +57,7 @@ export class Property {
       case "exclusive":
         return "Exclusive Kurata";
       case "broker":
-        return "Broker Partner";
+        return "Mitra Kurata";
       default:
         return "";
     }

@@ -107,7 +107,7 @@ export function WorkspaceLayout({ kind, title, description, children }: { kind: 
           </button>
 
           <main>
-            <p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">{kind === "broker" ? "Broker Partner Kurata" : "Kurata workspace"}</p>
+            <p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">{kind === "broker" ? "Mitra Kurata" : "Kurata workspace"}</p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight text-on-surface md:text-4xl">{title}</h1>
             <p className="mt-2 max-w-2xl text-body-md leading-6 text-on-surface-variant">{description}</p>
             <div className="mt-7">{children}</div>

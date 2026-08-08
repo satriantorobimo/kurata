@@ -5,7 +5,7 @@ import { SUPPORT_CATEGORIES_CONTENT, SUPPORT_CATEGORY_LABELS, SUPPORT_FAQS } fro
 import { SUPPORT_CATEGORIES, type SupportCategory } from "@/domain/entities/SupportRequest";
 import { SupportRequestForm } from "@/presentation/components/support/SupportRequestForm";
 
-export const metadata: Metadata = { title: "Pusat Bantuan | Kurata", description: "Temukan jawaban seputar akun, pencarian tanah, listing, layanan Kurata, investasi, broker, dan privasi data." };
+export const metadata: Metadata = { title: "Pusat Bantuan | Kurata", description: "Temukan jawaban seputar akun, pencarian tanah, listing, layanan Kurata, potensi lahan, Mitra Kurata, dan privasi data." };
 
 const CATEGORY_ICONS: Record<SupportCategory, typeof CircleHelp> = { "account-security": KeyRound, "search-listings": Search, "listing-information": FileText, investment: Building2, "broker-partner": UserRoundCheck, "kurata-services": BriefcaseBusiness, "privacy-data": LockKeyhole };
 const POPULAR_IDS = ["search-land", "listing-verification", "password-recovery", "investment-guidance"];
