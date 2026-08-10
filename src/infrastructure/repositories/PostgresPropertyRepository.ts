@@ -53,7 +53,12 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     const rows = await getDatabase()
       .select()
       .from(properties)
-      .where(eq(properties.isPublished, true))
+      .where(
+        and(
+          eq(properties.isPublished, true),
+          eq(properties.reviewStatus, "published"),
+        ),
+      )
       .orderBy(desc(properties.createdAt))
       .limit(12);
 
@@ -72,7 +77,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     ]);
 
     const property = row[0];
-    if (!property || !property.isPublished) return null;
+    if (!property || !property.isPublished || property.reviewStatus !== "published") return null;
 
     let brokerName: string | null = null;
     let brokerCity: string | null = null;
@@ -137,6 +142,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
       .where(
         and(
           eq(properties.isPublished, true),
+          eq(properties.reviewStatus, "published"),
           sql`${properties.id} != ${id}`,
           sql`(${properties.province} = ${row.province} OR ${properties.badge} IS NOT DISTINCT FROM ${row.badge})`,
         ),
@@ -151,7 +157,12 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     const rows = await getDatabase()
       .select({ id: properties.id })
       .from(properties)
-      .where(eq(properties.isPublished, true));
+      .where(
+        and(
+          eq(properties.isPublished, true),
+          eq(properties.reviewStatus, "published"),
+        ),
+      );
 
     return rows.map((row) => row.id);
   }
@@ -164,6 +175,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
 
     const conditions: SQL[] = [
       eq(properties.isPublished, true),
+      eq(properties.reviewStatus, "published"),
     ];
 
     if (query) {

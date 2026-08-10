@@ -13,7 +13,7 @@ export function proxy() {
   response.headers.set("X-XSS-Protection", "0");
   response.headers.set(
     "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+    "camera=(), microphone=(), geolocation=()",
   );
 
   response.headers.set(
