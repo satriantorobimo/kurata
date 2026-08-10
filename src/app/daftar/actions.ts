@@ -84,7 +84,9 @@ export async function register(
     createdAt: now,
   });
 
-  sendVerificationEmail(email, verificationToken, fullName).catch(() => {});
+  sendVerificationEmail(email, verificationToken, fullName).catch((err) =>
+    console.error("[registration] Failed to send verification email:", err),
+  );
 
   return {
     status: "success",
