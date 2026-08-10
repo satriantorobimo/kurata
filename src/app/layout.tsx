@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Header } from "@/presentation/components/layout/Header";
-import { Footer } from "@/presentation/components/layout/Footer";
+import { PublicChrome } from "@/presentation/components/layout/PublicChrome";
 import { absoluteUrl, jsonLdScript, siteName, siteUrl } from "@/lib/seo";
 import "./globals.css";
 
@@ -44,9 +43,7 @@ export default function RootLayout({
     <html lang="id" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript({ "@context": "https://schema.org", "@type": "Organization", name: siteName, url: absoluteUrl("/"), logo: absoluteUrl("/logo.png") }) }} />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <PublicChrome>{children}</PublicChrome>
       </body>
     </html>
   );

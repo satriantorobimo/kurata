@@ -5,6 +5,7 @@ import { PostgresBlogArticleRepository } from "../repositories/PostgresBlogArtic
 import { PostgresContentSectionRepository } from "../repositories/PostgresContentSectionRepository";
 import { PostgresAdminRepository } from "../repositories/PostgresAdminRepository";
 import { PostgresWorkspaceRepository } from "../repositories/PostgresWorkspaceRepository";
+import { PostgresCmsRepository } from "../repositories/PostgresCmsRepository";
 
 /**
  * Simple Dependency Injection container.
@@ -23,6 +24,7 @@ const supportRequestRepo = new PostgresFormRepository();
 const contentSectionRepo = new PostgresContentSectionRepository();
 const adminRepo = new PostgresAdminRepository();
 const workspaceRepo = new PostgresWorkspaceRepository();
+const cmsRepo = new PostgresCmsRepository();
 
 export const container = {
   propertyRepo,
@@ -35,6 +37,7 @@ export const container = {
   contentSectionRepo,
   adminRepo,
   workspaceRepo,
+  cmsRepo,
 };
 
 export type Container = typeof container;
