@@ -1,9 +1,12 @@
 import "server-only";
 
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 
+import type { VerificationInput } from "@/application/dto/VerificationFormDTO";
 import { getDatabase } from "../database/client";
 import { forms, properties, userFavorites, userVerifications, users } from "../database/schema";
+
+export type { VerificationStatus } from "@/infrastructure/repositories/PostgresCmsRepository";
 
 export interface WorkspaceFavorite {
   id: string;
@@ -186,5 +189,29 @@ export class PostgresWorkspaceRepository {
       phone: user?.phone ?? null,
       role: user?.role ?? "user",
     };
+  }
+
+  async submitVerification(input: VerificationInput): Promise<{ status: string }> {
+    const database = getDatabase();
+    const now = new Date();
+
+    await database
+      .update(userVerifications)
+      .set({
+        status: "submitted",
+        payload: {
+          nik: input.nik,
+          fullName: input.fullName,
+          birthPlace: input.birthPlace,
+          birthDate: input.birthDate,
+          address: input.address,
+        },
+        submittedAt: now,
+        version: sql`${userVerifications.version} + 1`,
+        updatedAt: now,
+      })
+      .where(eq(userVerifications.userId, input.userId));
+
+    return { status: "submitted" };
   }
 }

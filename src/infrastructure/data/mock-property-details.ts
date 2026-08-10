@@ -31,5 +31,9 @@ export function createMockPropertyDetail(property: Property): PropertyDetail {
     facilities: FACILITIES,
     listedAt: "Diperbarui hari ini",
     contactLabel: property.badge === "broker" ? "Mitra Kurata" : "Tim Kurata",
+    brokerName: null,
+    brokerCity: null,
+    brokerPhone: null,
+    brokerAvatarKey: null,
   };
 }

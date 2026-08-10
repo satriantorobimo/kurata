@@ -1,5 +1,6 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
 import { and, asc, count, desc, eq, like, ne, or, sql, type SQL } from "drizzle-orm";
 
 import { getDatabase } from "../database/client";
@@ -642,6 +643,52 @@ export class PostgresCmsRepository {
       .update(forms)
       .set({ fullName: input.fullName, email: input.email, phone: input.phone, payload: input.payload, acceptedTerms: input.acceptedTerms, reviewStatus: input.reviewStatus, reviewerNotes: input.reviewerNotes })
       .where(eq(forms.id, id));
+  }
+
+  async promoteBrokerFromApplication(formId: string, email: string, fullName: string, phone: string | null): Promise<string | null> {
+    const database = getDatabase();
+    const [existingUser] = await database.select({ id: users.id }).from(users).where(eq(users.email, email.toLowerCase())).limit(1);
+
+    if (existingUser) {
+      await database
+        .update(users)
+        .set({ role: "broker", updatedAt: new Date() })
+        .where(eq(users.id, existingUser.id));
+
+      const [existingVerification] = await database.select().from(userVerifications).where(eq(userVerifications.userId, existingUser.id)).limit(1);
+      if (existingVerification) {
+        await database
+          .update(userVerifications)
+          .set({ status: "approved", reviewedAt: new Date(), updatedAt: new Date() })
+          .where(eq(userVerifications.userId, existingUser.id));
+      } else {
+        await database.insert(userVerifications).values({ userId: existingUser.id, status: "approved" });
+      }
+
+      return existingUser.id;
+    }
+
+    const now = new Date();
+    const userId = randomUUID();
+    const tempPassword = randomUUID().replace(/-/g, "").slice(0, 16);
+
+    const { hashPassword } = await import("@/infrastructure/auth/password-hasher");
+
+    const passwordHash = await hashPassword(tempPassword);
+
+    await database.transaction(async (trx) => {
+      await trx
+        .insert(users)
+        .values({ id: userId, email: email.toLowerCase(), fullName, phone, role: "broker", status: "active", emailVerifiedAt: now, createdAt: now, updatedAt: now });
+
+      await trx.insert(passwordCredentials).values({ userId, passwordHash, passwordChangedAt: now, mustChangePassword: true, createdAt: now, updatedAt: now });
+
+      await trx.insert(userProfiles).values({ userId });
+
+      await trx.insert(userVerifications).values({ userId, status: "approved" });
+    });
+
+    return userId;
   }
 
   // ------------------------------------------------------------------- Users

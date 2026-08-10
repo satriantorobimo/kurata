@@ -11,4 +11,8 @@ export interface PropertyDetailDTO extends PropertyDTO {
   facilities: string[];
   listedAt: string;
   contactLabel: string;
+  brokerName: string | null;
+  brokerCity: string | null;
+  brokerPhone: string | null;
+  brokerAvatarKey: string | null;
 }

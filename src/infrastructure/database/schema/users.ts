@@ -161,6 +161,7 @@ export const userVerifications = core.table(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     status: verificationStatus("status").notNull().default("not_started"),
+    payload: jsonb("payload").$type<Record<string, unknown>>(),
     submittedAt: timestamp("submitted_at", { withTimezone: true }),
     reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
     reviewerId: uuid("reviewer_id").references(() => users.id, { onDelete: "set null" }),

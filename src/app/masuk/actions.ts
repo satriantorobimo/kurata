@@ -44,6 +44,25 @@ export async function login(
     .limit(1);
 
   const isValid = account ? await verifyPassword(account.passwordHash, password) : false;
+
+  if (!account || !isValid || account.status !== "active") {
+    if (account) {
+      await getDatabase().insert(securityEvents).values({
+        userId: account.id,
+        eventType: "login_failed",
+      });
+    }
+    return { status: "error", message: "Email atau password tidak sesuai." };
+  }
+
+  if (!account.emailVerifiedAt) {
+    return {
+      status: "error",
+      message: "Email Anda belum diverifikasi.",
+      fieldErrors: { email: "email-belum-diverifikasi" },
+    };
+  }
+
   const canSignIn = Boolean(account && isValid && account.status === "active" && account.emailVerifiedAt);
 
   if (!canSignIn || !account) {

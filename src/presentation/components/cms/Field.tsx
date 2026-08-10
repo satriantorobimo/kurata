@@ -118,13 +118,14 @@ interface CheckboxProps extends SharedFieldProps {
   checked?: boolean;
   defaultValue?: boolean;
   disabled?: boolean;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function Checkbox({ id, label, name, required, error, checked, defaultValue, disabled }: CheckboxProps) {
+export function Checkbox({ id, label, name, required, error, checked, defaultValue, disabled, onChange }: CheckboxProps) {
   return (
     <div>
       <label className={cn("flex items-start gap-2.5 text-label-sm", disabled ? "cursor-not-allowed text-on-surface-variant/60" : "text-on-surface-variant cursor-pointer")}>
-        <input id={id} name={name} type="checkbox" checked={checked} defaultChecked={defaultValue} disabled={disabled} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} className="mt-0.5 h-4 w-4 rounded border-outline text-primary focus:ring-primary" />
+        <input id={id} name={name} type="checkbox" checked={checked} defaultChecked={defaultValue} disabled={disabled} onChange={onChange} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} className="mt-0.5 h-4 w-4 rounded border-outline text-primary focus:ring-primary" />
         <span className={cn("font-normal", required && "text-on-surface")}>
           {label}
           {required ? <span className="text-error"> *</span> : null}

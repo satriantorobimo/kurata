@@ -1,0 +1,1 @@
+ALTER TABLE "core"."user_verifications" ADD COLUMN "payload" jsonb;

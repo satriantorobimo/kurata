@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Building2, ClipboardList, ExternalLink, FileText, LayoutDashboard, ListTree, LogOut, UsersRound } from "lucide-react";
+import { BarChart3, Building2, ClipboardList, ExternalLink, FileText, LayoutDashboard, ListTree, LogOut, TrendingUp, UsersRound } from "lucide-react";
 import { logout } from "@/app/auth/actions";
 import { cn } from "@/lib/cn";
 
@@ -10,6 +10,7 @@ export const CMS_NAV = [
   { href: "/cms", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/cms/properties", label: "Aset", icon: Building2, match: "/cms/properties" },
   { href: "/cms/blog", label: "Blog", icon: FileText, match: "/cms/blog" },
+  { href: "/cms/investasi", label: "Potensi Lahan", icon: TrendingUp, match: "/cms/investasi" },
   { href: "/cms/sections", label: "Segmen Konten", icon: ListTree, match: "/cms/sections" },
   { href: "/cms/statistics", label: "Statistik", icon: BarChart3, match: "/cms/statistics" },
   { href: "/cms/forms", label: "Pengajuan", icon: ClipboardList, match: "/cms/forms" },

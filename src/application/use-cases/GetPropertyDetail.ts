@@ -21,6 +21,10 @@ export class GetPropertyDetail {
       facilities: detail.facilities,
       listedAt: detail.listedAt,
       contactLabel: detail.contactLabel,
+      brokerName: detail.brokerName,
+      brokerCity: detail.brokerCity,
+      brokerPhone: detail.brokerPhone,
+      brokerAvatarKey: detail.brokerAvatarKey,
     };
   }
 }

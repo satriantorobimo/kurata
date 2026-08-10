@@ -25,11 +25,7 @@ export class Price {
     }
     if (this.amountInRupiah >= 1_000_000_000) {
       const billions = this.amountInRupiah / 1_000_000_000;
-      if (billions >= 1 && Number.isInteger(billions)) {
-        return `Rp ${billions} Miliar`;
-      }
-      const millions = this.amountInRupiah / 1_000_000;
-      return `Rp ${this.formatNumber(millions)} Juta`;
+      return `Rp ${this.formatNumber(billions)} Miliar`;
     }
     if (this.amountInRupiah >= 1_000_000) {
       const millions = this.amountInRupiah / 1_000_000;

@@ -13,7 +13,7 @@ import type {
   PropertySearchResult,
 } from "../../domain/repositories/IPropertyRepository";
 import { getDatabase } from "../database/client";
-import { properties, propertyImages } from "../database/schema";
+import { properties, propertyImages, userProfiles, users } from "../database/schema";
 
 const VALID_CERTIFICATES = ["SHM", "HGB", "HGU", "HP"] as const;
 const VALID_BADGES = ["exclusive", "broker"] as const;
@@ -74,6 +74,39 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     const property = row[0];
     if (!property || !property.isPublished) return null;
 
+    let brokerName: string | null = null;
+    let brokerCity: string | null = null;
+    let brokerPhone: string | null = null;
+    let brokerAvatarKey: string | null = null;
+
+    if (property.listedBy) {
+      const [broker] = await database
+        .select({
+          fullName: users.fullName,
+          phone: users.phone,
+        })
+        .from(users)
+        .where(eq(users.id, property.listedBy));
+
+      if (broker) {
+        brokerName = broker.fullName;
+        brokerPhone = broker.phone ?? null;
+
+        const [profile] = await database
+          .select({
+            city: userProfiles.city,
+            avatarKey: userProfiles.avatarObjectKey,
+          })
+          .from(userProfiles)
+          .where(eq(userProfiles.userId, property.listedBy));
+
+        if (profile) {
+          brokerCity = profile.city ?? null;
+          brokerAvatarKey = profile.avatarKey ?? null;
+        }
+      }
+    }
+
     return {
       property: mapRow(property),
       description: property.description ?? "",
@@ -86,6 +119,10 @@ export class PostgresPropertyRepository implements IPropertyRepository {
       facilities: property.facilities ?? [],
       listedAt: property.listedAt ?? "",
       contactLabel: property.contactLabel ?? "",
+      brokerName,
+      brokerCity,
+      brokerPhone,
+      brokerAvatarKey,
     };
   }
 

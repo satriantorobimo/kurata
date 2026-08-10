@@ -18,7 +18,7 @@ describe("Price", () => {
 
   it("formats billions as Miliar", () => {
     expect(Price.fromRupiah(2_000_000_000).toDisplayString()).toBe("Rp 2 Miliar");
-    expect(Price.fromRupiah(2_500_000_000).toDisplayString()).toBe("Rp 2500 Juta");
+    expect(Price.fromRupiah(2_500_000_000).toDisplayString()).toBe("Rp 2,5 Miliar");
   });
 
   it("formats trillions as Triliun", () => {

@@ -12,4 +12,8 @@ export interface PropertyDetail {
   facilities: string[];
   listedAt: string;
   contactLabel: string;
+  brokerName: string | null;
+  brokerCity: string | null;
+  brokerPhone: string | null;
+  brokerAvatarKey: string | null;
 }

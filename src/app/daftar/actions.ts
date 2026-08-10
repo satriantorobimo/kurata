@@ -4,10 +4,14 @@ import { eq } from "drizzle-orm";
 
 import type { AuthFormState } from "@/application/dto/AuthFormDTO";
 import { hashPassword } from "@/infrastructure/auth/password-hasher";
+import { createOpaqueToken, hashOpaqueToken } from "@/infrastructure/auth/secure-token";
 import { getDatabase } from "@/infrastructure/database/client";
-import { passwordCredentials, securityEvents, userProfiles, userVerifications, users } from "@/infrastructure/database/schema";
+import { emailVerificationTokens, passwordCredentials, securityEvents, userProfiles, userVerifications, users } from "@/infrastructure/database/schema";
+import { sendVerificationEmail } from "@/infrastructure/email/send-verification-email";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const TOKEN_EXPIRY_HOURS = 24;
 
 export async function register(
   _previousState: AuthFormState,
@@ -52,7 +56,6 @@ export async function register(
       phone: phone || null,
       role: "user",
       status: "active",
-      emailVerifiedAt: now,
       createdAt: now,
       updatedAt: now,
     })
@@ -70,8 +73,28 @@ export async function register(
   await database.insert(userVerifications).values({ userId: created.id, status: "not_started" });
   await database.insert(securityEvents).values({ userId: created.id, eventType: "account_registered" });
 
+  const verificationToken = createOpaqueToken();
+  const tokenHash = hashOpaqueToken(verificationToken);
+  const expiresAt = new Date(Date.now() + TOKEN_EXPIRY_HOURS * 60 * 60 * 1000);
+
+  await database.insert(emailVerificationTokens).values({
+    userId: created.id,
+    tokenHash,
+    expiresAt,
+    createdAt: now,
+  });
+
+  try {
+    await sendVerificationEmail(email, verificationToken, fullName);
+  } catch {
+    return {
+      status: "error",
+      message: "Gagal mengirim email verifikasi. Silakan coba lagi nanti.",
+    };
+  }
+
   return {
     status: "success",
-    message: "Akun berhasil dibuat. Silakan masuk dengan email dan password Anda.",
+    message: "Akun berhasil dibuat. Kami telah mengirim email verifikasi ke alamat Anda. Silakan periksa kotak masuk dan klik tautan verifikasi untuk mengaktifkan akun.",
   };
 }

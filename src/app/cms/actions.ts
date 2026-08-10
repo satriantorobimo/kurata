@@ -263,9 +263,19 @@ export async function updateFormSubmissionAction(id: string, input: { fullName: 
     if (!isReviewStatus(input.reviewStatus)) errors.reviewStatus = "Status tidak valid.";
     if (Object.keys(errors).length > 0) return { ok: false, message: "Periksa kembali pengajuan.", fieldErrors: errors };
 
+    const existing = await container.cmsRepo.getFormById(id);
+    if (!existing) return { ok: false, message: "Pengajuan tidak ditemukan." };
+
+    const wasApproved = existing.formType === "broker_application" && existing.reviewStatus !== "published" && input.reviewStatus === "published";
+
     await container.cmsRepo.updateForm(id, input);
+
+    if (wasApproved) {
+      await container.cmsRepo.promoteBrokerFromApplication(id, existing.email, existing.fullName, existing.phone);
+    }
+
     revalidatePath("/cms/forms");
-    return { ok: true, message: "Pengajuan berhasil diperbarui." };
+    return { ok: true, message: wasApproved ? "Pengajuan mitra disetujui dan akun broker telah dibuat." : "Pengajuan berhasil diperbarui." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
   }
