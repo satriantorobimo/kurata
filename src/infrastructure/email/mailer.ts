@@ -21,6 +21,9 @@ export function getTransporter(): Transporter {
     port: Number(port),
     secure: false,
     auth: { user, pass },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
   });
 
   return transporter;

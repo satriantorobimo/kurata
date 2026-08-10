@@ -84,14 +84,7 @@ export async function register(
     createdAt: now,
   });
 
-  try {
-    await sendVerificationEmail(email, verificationToken, fullName);
-  } catch {
-    return {
-      status: "error",
-      message: "Gagal mengirim email verifikasi. Silakan coba lagi nanti.",
-    };
-  }
+  sendVerificationEmail(email, verificationToken, fullName).catch(() => {});
 
   return {
     status: "success",
