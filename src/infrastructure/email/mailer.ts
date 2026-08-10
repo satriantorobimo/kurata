@@ -1,27 +1,27 @@
 import "server-only";
 
-import { createTransport } from "nodemailer";
+import { createTransport, type Transporter } from "nodemailer";
 
-function getEnv(key: string): string {
-  const value = process.env[key];
-  if (!value) throw new Error(`Environment variable ${key} is required.`);
-  return value;
-}
+let transporter: Transporter | null = null;
 
-function createMailTransport() {
-  return createTransport({
-    host: getEnv("SMTP_HOST"),
-    port: Number(getEnv("SMTP_PORT")),
+export function getTransporter(): Transporter {
+  if (transporter) return transporter;
+
+  const host = process.env.SMTP_HOST;
+  const port = process.env.SMTP_PORT;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!host || !port || !user || !pass) {
+    throw new Error("SMTP environment variables (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS) are required to send email.");
+  }
+
+  transporter = createTransport({
+    host,
+    port: Number(port),
     secure: false,
-    auth: {
-      user: getEnv("SMTP_USER"),
-      pass: getEnv("SMTP_PASS"),
-    },
+    auth: { user, pass },
   });
-}
 
-const transporter = createMailTransport();
-
-export function getTransporter() {
   return transporter;
 }
