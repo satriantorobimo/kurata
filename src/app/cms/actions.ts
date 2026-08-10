@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { hashPassword } from "@/infrastructure/auth/password-hasher";
 import { requireRole } from "@/infrastructure/security/authorization-dal";
 import { container } from "@/infrastructure/di/container";
+import { logAudit } from "@/infrastructure/audit/log";
 import type {
   AccountStatus,
   CmsBlogInput,
@@ -40,13 +41,15 @@ function fail(message: string): CmsActionResult {
 // --------------------------------------------------------------- Properties
 export async function createPropertyAction(input: Omit<CmsPropertyInput, "id">): Promise<CmsActionResult> {
   try {
-    await requireSuperAdmin();
+    const actor = await requireSuperAdmin();
 
     const errors = validatePropertyInput(input);
     if (Object.keys(errors).length > 0) return { ok: false, message: "Periksa kembali data aset.", fieldErrors: errors };
 
-    await container.cmsRepo.createProperty({ ...input, id: randomUUID() });
+    const id = randomUUID();
+    await container.cmsRepo.createProperty({ ...input, id });
     revalidatePath("/cms/properties");
+    logAudit({ actorUserId: actor.userId, eventType: "property.create", entityType: "property", entityId: id });
     return { ok: true, message: "Aset berhasil dibuat." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
@@ -55,7 +58,7 @@ export async function createPropertyAction(input: Omit<CmsPropertyInput, "id">):
 
 export async function updatePropertyAction(id: string, input: Omit<CmsPropertyInput, "id">): Promise<CmsActionResult> {
   try {
-    await requireSuperAdmin();
+    const actor = await requireSuperAdmin();
 
     const errors = validatePropertyInput(input);
     if (Object.keys(errors).length > 0) return { ok: false, message: "Periksa kembali data aset.", fieldErrors: errors };
@@ -63,6 +66,7 @@ export async function updatePropertyAction(id: string, input: Omit<CmsPropertyIn
     await container.cmsRepo.updateProperty(id, input);
     revalidatePath("/cms/properties");
     revalidatePath("/cms/properties/[id]", "page");
+    logAudit({ actorUserId: actor.userId, eventType: "property.update", entityType: "property", entityId: id });
     return { ok: true, message: "Aset berhasil diperbarui." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
@@ -71,9 +75,10 @@ export async function updatePropertyAction(id: string, input: Omit<CmsPropertyIn
 
 export async function deletePropertyAction(id: string): Promise<CmsActionResult> {
   try {
-    await requireSuperAdmin();
+    const actor = await requireSuperAdmin();
     await container.cmsRepo.deleteProperty(id);
     revalidatePath("/cms/properties");
+    logAudit({ actorUserId: actor.userId, eventType: "property.delete", entityType: "property", entityId: id });
     return { ok: true, message: "Aset berhasil dihapus." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
@@ -82,12 +87,13 @@ export async function deletePropertyAction(id: string): Promise<CmsActionResult>
 
 export async function setPropertyReviewStatusAction(propertyId: string, status: string): Promise<CmsActionResult> {
   try {
-    await requireSuperAdmin();
+    const actor = await requireSuperAdmin();
     if (!isReviewStatus(status)) return fail("Status tidak valid.");
 
     const published = status === "published";
     await container.cmsRepo.updatePropertyStatus(propertyId, status, published);
     revalidatePath("/cms/properties");
+    logAudit({ actorUserId: actor.userId, eventType: "property.review", entityType: "property", entityId: propertyId, metadata: JSON.stringify({ status }) });
     return { ok: true, message: "Status aset diperbarui." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
@@ -122,7 +128,7 @@ export async function deletePropertyImageAction(imageId: string): Promise<CmsAct
 // --------------------------------------------------------------------- Blog
 export async function createBlogAction(input: CmsBlogInput): Promise<CmsActionResult> {
   try {
-    await requireSuperAdmin();
+    const actor = await requireSuperAdmin();
 
     const errors = validateBlogInput(input);
     if (Object.keys(errors).length > 0) return { ok: false, message: "Periksa kembali artikel.", fieldErrors: errors };
@@ -131,6 +137,7 @@ export async function createBlogAction(input: CmsBlogInput): Promise<CmsActionRe
 
     await container.cmsRepo.createBlog(input);
     revalidatePath("/cms/blog");
+    logAudit({ actorUserId: actor.userId, eventType: "blog.create", entityType: "blog", entityId: input.slug });
     return { ok: true, message: "Artikel berhasil dibuat." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
@@ -139,7 +146,7 @@ export async function createBlogAction(input: CmsBlogInput): Promise<CmsActionRe
 
 export async function updateBlogAction(slug: string, input: CmsBlogInput): Promise<CmsActionResult> {
   try {
-    await requireSuperAdmin();
+    const actor = await requireSuperAdmin();
 
     const errors = validateBlogInput(input);
     if (Object.keys(errors).length > 0) return { ok: false, message: "Periksa kembali artikel.", fieldErrors: errors };
@@ -153,6 +160,7 @@ export async function updateBlogAction(slug: string, input: CmsBlogInput): Promi
     await container.cmsRepo.updateBlog(slug, input);
     revalidatePath("/cms/blog");
     revalidatePath("/cms/blog/[slug]", "page");
+    logAudit({ actorUserId: actor.userId, eventType: "blog.update", entityType: "blog", entityId: slug });
     return { ok: true, message: "Artikel berhasil diperbarui." };
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("Mengubah slug")) return { ok: false, message: error.message };
@@ -162,9 +170,10 @@ export async function updateBlogAction(slug: string, input: CmsBlogInput): Promi
 
 export async function deleteBlogAction(slug: string): Promise<CmsActionResult> {
   try {
-    await requireSuperAdmin();
+    const actor = await requireSuperAdmin();
     await container.cmsRepo.deleteBlog(slug);
     revalidatePath("/cms/blog");
+    logAudit({ actorUserId: actor.userId, eventType: "blog.delete", entityType: "blog", entityId: slug });
     return { ok: true, message: "Artikel berhasil dihapus." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
@@ -254,7 +263,7 @@ export async function deleteStatisticAction(id: string): Promise<CmsActionResult
 // --------------------------------------------------------------------- Forms
 export async function updateFormSubmissionAction(id: string, input: { fullName: string; email: string; phone: string | null; payload: Record<string, unknown>; acceptedTerms: boolean; reviewStatus: string; reviewerNotes: string | null }): Promise<CmsActionResult> {
   try {
-    await requireSuperAdmin();
+    const actor = await requireSuperAdmin();
 
     const errors: Record<string, string> = {};
     if (input.fullName.trim().length < 2) errors.fullName = "Nama minimal 2 karakter.";
@@ -275,6 +284,7 @@ export async function updateFormSubmissionAction(id: string, input: { fullName: 
     }
 
     revalidatePath("/cms/forms");
+    logAudit({ actorUserId: actor.userId, eventType: "form.update", entityType: "form", entityId: id, metadata: JSON.stringify({ reviewStatus: input.reviewStatus, brokerPromoted: wasApproved }) });
     return { ok: true, message: wasApproved ? "Pengajuan mitra disetujui dan akun broker telah dibuat." : "Pengajuan berhasil diperbarui." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
@@ -284,12 +294,20 @@ export async function updateFormSubmissionAction(id: string, input: { fullName: 
 // --------------------------------------------------------------------- Users
 export async function createUserAction(input: Omit<CmsUserInput, "id" | "passwordHash"> & { password: string }): Promise<CmsActionResult> {
   try {
-    await requireSuperAdmin();
+    const actor = await requireSuperAdmin();
+
+    const isAdminRole = input.role === "admin" || input.role === "super_admin";
+    const minPasswordLength = isAdminRole ? 14 : 8;
+    const hasLetter = /[A-Za-z]/.test(input.password);
+    const hasDigit = /\d/.test(input.password);
+    const hasSpecial = /[^A-Za-z0-9]/.test(input.password);
 
     const errors: Record<string, string> = {};
     if (input.fullName.trim().length < 2) errors.fullName = "Nama minimal 2 karakter.";
     if (!EMAIL_PATTERN.test(input.email)) errors.email = "Format email tidak valid.";
-    if (input.password.length < 8 || !/[A-Za-z]/.test(input.password) || !/\d/.test(input.password)) errors.password = "Password minimal 8 karakter dengan huruf dan angka.";
+    if (input.password.length < minPasswordLength) errors.password = `Password minimal ${minPasswordLength} karakter.`;
+    if (!hasLetter || !hasDigit) errors.password = "Password harus mengandung huruf dan angka.";
+    if (isAdminRole && !hasSpecial) errors.password = "Password admin harus mengandung minimal satu karakter khusus (!@#$% dll).";
     if (!ROLES.includes(input.role)) errors.role = "Peran tidak valid.";
     if (!ACCOUNT_STATUSES.includes(input.status)) errors.status = "Status tidak valid.";
     if (Object.keys(errors).length > 0) return { ok: false, message: "Periksa kembali data pengguna.", fieldErrors: errors };
@@ -297,9 +315,11 @@ export async function createUserAction(input: Omit<CmsUserInput, "id" | "passwor
     if (await container.cmsRepo.emailExists(input.email)) return { ok: false, fieldErrors: { email: "Email sudah terdaftar." } };
 
     const passwordHash = await hashPassword(input.password);
-    await container.cmsRepo.createUser({ id: randomUUID(), email: input.email, fullName: input.fullName, phone: input.phone, role: input.role, status: input.status, passwordHash, marketingConsent: input.marketingConsent });
+    const id = randomUUID();
+    await container.cmsRepo.createUser({ id, email: input.email, fullName: input.fullName, phone: input.phone, role: input.role, status: input.status, passwordHash, marketingConsent: input.marketingConsent });
 
     revalidatePath("/cms/users");
+    logAudit({ actorUserId: actor.userId, eventType: "user.create", entityType: "user", entityId: id, metadata: JSON.stringify({ role: input.role }) });
     return { ok: true, message: "Pengguna berhasil dibuat." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
@@ -323,6 +343,7 @@ export async function updateUserAction(id: string, input: { fullName: string; ph
 
     await container.cmsRepo.updateUser(id, { fullName: input.fullName, phone: input.phone, role: input.role, status: input.status });
     revalidatePath("/cms/users");
+    logAudit({ actorUserId: actor.userId, eventType: "user.update", entityType: "user", entityId: id, metadata: JSON.stringify({ role: input.role, status: input.status }) });
     return { ok: true, message: "Pengguna berhasil diperbarui." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
@@ -340,6 +361,7 @@ export async function deleteUserAction(id: string): Promise<CmsActionResult> {
 
     await container.cmsRepo.deleteUser(id);
     revalidatePath("/cms/users");
+    logAudit({ actorUserId: actor.userId, eventType: "user.delete", entityType: "user", entityId: id });
     return { ok: true, message: "Pengguna berhasil dihapus." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
@@ -353,6 +375,7 @@ export async function updateUserVerificationAction(userId: string, input: { stat
 
     await container.cmsRepo.updateUserVerification(userId, { status: input.status, notes: input.notes?.trim() || null, reviewerId: actor.userId });
     revalidatePath("/cms/users");
+    logAudit({ actorUserId: actor.userId, eventType: "user.verification", entityType: "user", entityId: userId, metadata: JSON.stringify({ status: input.status }) });
     return { ok: true, message: "Status verifikasi diperbarui." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };

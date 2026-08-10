@@ -10,7 +10,7 @@ const FOOTER_GROUPS: FooterLinkGroup[] = [
   {
     title: "Platform",
     links: [
-      { label: "Cari Properti", href: "/cari-tanah" },
+      { label: "Cari Tanah", href: "/cari-tanah" },
       { label: "Potensi Lahan", href: "/investasi" },
       { label: "Estimasi Harga", href: "/estimasi" },
     ],

@@ -68,15 +68,22 @@ export async function resendVerificationEmailAction(email: string): Promise<Veri
     .where(eq(users.email, cleanEmail))
     .limit(1);
 
-  if (!user) {
-    return { ok: false, message: "Email tidak ditemukan. Silakan daftar terlebih dahulu." };
-  }
-
-  if (user.emailVerifiedAt) {
-    return { ok: false, message: "Email ini sudah diverifikasi. Silakan masuk ke akun Anda." };
+  if (!user || user.emailVerifiedAt) {
+    return { ok: true, message: "Jika email terdaftar dan belum diverifikasi, tautan verifikasi akan dikirim." };
   }
 
   const now = new Date();
+
+  await database
+    .update(emailVerificationTokens)
+    .set({ consumedAt: now })
+    .where(
+      and(
+        eq(emailVerificationTokens.userId, user.id),
+        isNull(emailVerificationTokens.consumedAt),
+      ),
+    );
+
   const verificationToken = createOpaqueToken();
   const tokenHash = hashOpaqueToken(verificationToken);
   const expiresAt = new Date(Date.now() + TOKEN_EXPIRY_HOURS * 60 * 60 * 1000);

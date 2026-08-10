@@ -20,6 +20,7 @@ export function getTransporter(): Transporter {
     host,
     port: Number(port),
     secure: false,
+    requireTLS: true,
     auth: { user, pass },
     connectionTimeout: 10000,
     greetingTimeout: 10000,

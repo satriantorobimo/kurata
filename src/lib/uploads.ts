@@ -26,11 +26,38 @@ export interface UploadErr {
   error: string;
 }
 
-export async function savePropertyImage(file: File): Promise<UploadOk | UploadErr> {
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    return { ok: false, error: `Format tidak didukung. Gunakan JPG, PNG, WebP, atau AVIF.` };
+function detectMimeType(buffer: Buffer): string | null {
+  if (buffer.length < 12) return null;
+
+  if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+    return "image/jpeg";
   }
 
+  if (
+    buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47
+  ) {
+    return "image/png";
+  }
+
+  if (
+    buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+    buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50
+  ) {
+    return "image/webp";
+  }
+
+  if (
+    buffer[4] === 0x66 && buffer[5] === 0x74 && buffer[6] === 0x79 && buffer[7] === 0x70 &&
+    ((buffer[8] === 0x61 && buffer[9] === 0x76 && buffer[10] === 0x69 && buffer[11] === 0x66) ||
+     (buffer[8] === 0x61 && buffer[9] === 0x76 && buffer[10] === 0x69 && buffer[11] === 0x73))
+  ) {
+    return "image/avif";
+  }
+
+  return null;
+}
+
+export async function savePropertyImage(file: File): Promise<UploadOk | UploadErr> {
   if (file.size > MAX_SIZE) {
     return { ok: false, error: `Ukuran file terlalu besar (${(file.size / 1024 / 1024).toFixed(1)} MB). Maksimal 5 MB.` };
   }
@@ -39,13 +66,19 @@ export async function savePropertyImage(file: File): Promise<UploadOk | UploadEr
     return { ok: false, error: "File kosong." };
   }
 
-  const ext = EXT_MAP[file.type] ?? ".jpg";
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const buffer = Buffer.from(bytes);
+  const detectedType = detectMimeType(buffer);
+
+  if (!detectedType || !ALLOWED_TYPES.includes(detectedType)) {
+    return { ok: false, error: `Format tidak didukung. Gunakan JPG, PNG, WebP, atau AVIF.` };
+  }
+
+  const ext = EXT_MAP[detectedType] ?? ".jpg";
   const filename = `${randomUUID()}${ext}`;
 
   await mkdir(PROPERTIES_DIR, { recursive: true });
-
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  await writeFile(join(PROPERTIES_DIR, filename), Buffer.from(bytes));
+  await writeFile(join(PROPERTIES_DIR, filename), buffer);
 
   return { ok: true, url: `/uploads/properties/${filename}` };
 }

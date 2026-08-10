@@ -18,7 +18,7 @@ function databaseUrl(): string {
 }
 
 export function getDatabase() {
-  pool ??= new Pool({ connectionString: databaseUrl() });
+  pool ??= new Pool({ connectionString: databaseUrl(), max: 10, idleTimeoutMillis: 30_000, connectionTimeoutMillis: 5_000 });
 
   return drizzle({ client: pool, schema });
 }

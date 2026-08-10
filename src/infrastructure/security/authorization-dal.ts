@@ -30,6 +30,8 @@ export class AuthorizationDeniedError extends Error {
   }
 }
 
+const IDLE_MINUTES = { admin: 30, user: 7 * 24 * 60 } as const;
+
 export async function getCurrentAuthContext(): Promise<AuthContext | null> {
   const token = await getSessionCookie();
   if (!token) return null;
@@ -58,6 +60,16 @@ export async function getCurrentAuthContext(): Promise<AuthContext | null> {
     .limit(1);
 
   if (!result) return null;
+
+  const isAdmin = result.role === "admin" || result.role === "super_admin";
+  const idleMinutes = isAdmin ? IDLE_MINUTES.admin : IDLE_MINUTES.user;
+  const newIdleExpiry = new Date(now.getTime() + idleMinutes * 60 * 1000);
+
+  getDatabase()
+    .update(sessions)
+    .set({ lastSeenAt: now, idleExpiresAt: newIdleExpiry })
+    .where(eq(sessions.id, result.sessionId))
+    .catch(() => {});
 
   return result;
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 
 import type { AuthFormState } from "@/application/dto/AuthFormDTO";
 import { hashPassword } from "@/infrastructure/auth/password-hasher";
@@ -8,17 +9,36 @@ import { createOpaqueToken, hashOpaqueToken } from "@/infrastructure/auth/secure
 import { getDatabase } from "@/infrastructure/database/client";
 import { emailVerificationTokens, passwordCredentials, securityEvents, userProfiles, userVerifications, users } from "@/infrastructure/database/schema";
 import { sendVerificationEmail } from "@/infrastructure/email/send-verification-email";
+import { rateLimit } from "@/lib/rate-limit";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const TOKEN_EXPIRY_HOURS = 24;
 
+async function clientIp(): Promise<string> {
+  const h = await headers();
+  return h.get("x-forwarded-for")?.split(",")[0]?.trim()
+    ?? h.get("x-real-ip")
+    ?? "127.0.0.1";
+}
+
 export async function register(
   _previousState: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
-  const fullName = String(formData.get("fullName") ?? "").trim();
+  const ip = await clientIp();
+  const rl = rateLimit(`register:${ip}`, 3);
+  if (!rl.allowed) {
+    return { status: "error", message: "Terlalu banyak permintaan. Silakan coba lagi nanti." };
+  }
+
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const emailRl = rateLimit(`register-email:${email}`, 2);
+  if (!emailRl.allowed) {
+    return { status: "success", message: "Jika email belum terdaftar, tautan verifikasi akan dikirim." };
+  }
+
+  const fullName = String(formData.get("fullName") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
@@ -43,7 +63,7 @@ export async function register(
   const database = getDatabase();
   const [existing] = await database.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
   if (existing) {
-    return { status: "error", fieldErrors: { email: "Email sudah terdaftar. Gunakan email lain atau masuk ke akun Anda." } };
+    return { status: "success", message: "Jika email belum terdaftar, tautan verifikasi akan dikirim." };
   }
 
   const passwordHash = await hashPassword(password);
@@ -71,7 +91,7 @@ export async function register(
   });
   await database.insert(userProfiles).values({ userId: created.id });
   await database.insert(userVerifications).values({ userId: created.id, status: "not_started" });
-  await database.insert(securityEvents).values({ userId: created.id, eventType: "account_registered" });
+  await database.insert(securityEvents).values({ userId: created.id, eventType: "account_registered", ipHash: ip });
 
   const verificationToken = createOpaqueToken();
   const tokenHash = hashOpaqueToken(verificationToken);

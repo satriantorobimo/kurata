@@ -1,5 +1,7 @@
 "use server";
 
+import { headers } from "next/headers";
+
 import {
   BROKER_EXPERIENCE_LEVELS,
   BROKER_SPECIALIZATIONS,
@@ -15,6 +17,14 @@ import type {
 } from "@/application/dto/BrokerApplicationDTO";
 import { SubmitBrokerApplication } from "@/application/use-cases/SubmitBrokerApplication";
 import { container } from "@/infrastructure/di/container";
+import { rateLimit } from "@/lib/rate-limit";
+
+async function clientIp(): Promise<string> {
+  const h = await headers();
+  return h.get("x-forwarded-for")?.split(",")[0]?.trim()
+    ?? h.get("x-real-ip")
+    ?? "127.0.0.1";
+}
 
 function fieldValue(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -39,6 +49,11 @@ export async function submitBrokerApplication(
   _previousState: BrokerApplicationFormState,
   formData: FormData,
 ): Promise<BrokerApplicationFormState> {
+  const ip = await clientIp();
+  const rl = rateLimit(`submit:broker:${ip}`, 3);
+  if (!rl.allowed) {
+    return { status: "error", message: "Terlalu banyak permintaan. Silakan coba lagi nanti." };
+  }
   if (fieldValue(formData, "website")) {
     return { status: "error", message: "Permintaan tidak dapat diproses." };
   }

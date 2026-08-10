@@ -1,5 +1,7 @@
 "use server";
 
+import { headers } from "next/headers";
+
 import {
   INQUIRY_ROLES,
   PREFERRED_CONTACT_METHODS,
@@ -15,6 +17,14 @@ import type {
 } from "@/application/dto/ServiceInquiryDTO";
 import { SubmitServiceInquiry } from "@/application/use-cases/SubmitServiceInquiry";
 import { container } from "@/infrastructure/di/container";
+import { rateLimit } from "@/lib/rate-limit";
+
+async function clientIp(): Promise<string> {
+  const h = await headers();
+  return h.get("x-forwarded-for")?.split(",")[0]?.trim()
+    ?? h.get("x-real-ip")
+    ?? "127.0.0.1";
+}
 
 function valueOf(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -29,6 +39,10 @@ export async function submitServiceInquiry(
   _previousState: ServiceInquiryFormState,
   formData: FormData,
 ): Promise<ServiceInquiryFormState> {
+  const ip = await clientIp();
+  const rl = rateLimit(`submit:layanan:${ip}`, 5);
+  if (!rl.allowed) return { status: "error", message: "Terlalu banyak permintaan. Silakan coba lagi nanti." };
+
   if (valueOf(formData, "website")) {
     return { status: "error", message: "Permintaan tidak dapat diproses." };
   }

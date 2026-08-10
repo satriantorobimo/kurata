@@ -41,11 +41,18 @@ function escapeHtml(text: string): string {
   });
 }
 
+function maskEmail(email: string): string {
+  const [local, domain] = email.split("@");
+  if (!domain) return "***";
+  const maskedLocal = local.length > 2 ? local.slice(0, 2) + "***" : local.charAt(0) + "***";
+  return `${maskedLocal}@${domain}`;
+}
+
 export async function sendVerificationEmail(to: string, token: string, userName: string): Promise<void> {
   const verifyLink = `${siteUrl()}/verify-email?token=${encodeURIComponent(token)}`;
   const html = buildVerificationHtml(verifyLink, userName);
 
-  console.log(`[email] Sending verification to ${to} via ${process.env.SMTP_HOST}:${process.env.SMTP_PORT}`);
+  console.log(`[email] Sending verification to ${maskEmail(to)} via ${process.env.SMTP_HOST}:${process.env.SMTP_PORT}`);
 
   const info = await getTransporter().sendMail({
     from: `"Kurata" <${senderEmail()}>`,
@@ -54,5 +61,5 @@ export async function sendVerificationEmail(to: string, token: string, userName:
     html,
   });
 
-  console.log(`[email] Verification sent to ${to}: ${info.messageId}`);
+  console.log(`[email] Verification sent: ${info.messageId}`);
 }
