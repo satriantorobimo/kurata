@@ -30,9 +30,17 @@ export function ImageUpload({ name, currentUrl, label, required, hint, disabled,
   const displayUrl = uploadedUrl ?? currentUrl ?? undefined;
   const atLimit = typeof maxCount === "number" && currentCount >= maxCount;
 
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selected = event.target.files?.item(0) ?? null;
     if (!selected) return;
+
+    if (selected.size > MAX_FILE_SIZE) {
+      setError(`Ukuran file terlalu besar (${(selected.size / 1024 / 1024).toFixed(1)} MB). Maksimal 5 MB.`);
+      event.target.value = "";
+      return;
+    }
 
     if (previewUrl) URL.revokeObjectURL(previewUrl);
 
