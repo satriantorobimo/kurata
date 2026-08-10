@@ -10,7 +10,6 @@ type WorkspaceKind = "user" | "broker";
 
 const USER_NAV = [
   { href: "/dashboard", label: "Ringkasan", icon: LayoutDashboard },
-  { href: "/dashboard/verification", label: "Verifikasi", icon: ShieldCheck },
   { href: "/dashboard/favorites", label: "Properti tersimpan", icon: Heart },
   { href: "/dashboard/inquiries", label: "Pertanyaan saya", icon: MessageSquare },
   { href: "/dashboard/profile", label: "Profil", icon: UserRound },

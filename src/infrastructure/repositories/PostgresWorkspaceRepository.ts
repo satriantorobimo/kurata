@@ -74,9 +74,8 @@ export class PostgresWorkspaceRepository {
   async getUserWorkspace(userId: string, email: string): Promise<UserWorkspaceData> {
     const database = getDatabase();
 
-    const [userRows, verificationRows, inquiryRows] = await Promise.all([
+    const [userRows, inquiryRows] = await Promise.all([
       database.select().from(users).where(eq(users.id, userId)).limit(1),
-      database.select().from(userVerifications).where(eq(userVerifications.userId, userId)).limit(1),
       database.select().from(forms).where(eq(forms.email, email)).orderBy(desc(forms.createdAt)).limit(20),
     ]);
 
@@ -85,7 +84,7 @@ export class PostgresWorkspaceRepository {
 
     return {
       name: user?.fullName ?? "Pengguna Kurata",
-      verification: verificationRows[0]?.status ?? "not_started",
+      verification: user?.emailVerifiedAt ? "approved" : "not_started",
       favoriteProperties,
       inquiries: inquiryRows.map((row) => ({
         id: row.id,
