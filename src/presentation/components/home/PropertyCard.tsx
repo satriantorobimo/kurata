@@ -83,7 +83,7 @@ export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
 
         {/* Right: Sales contact */}
         {property.badge === "exclusive" && salesInfo ? (
-          <div className="w-36 shrink-0 border-l border-border-subtle bg-surface-container-low px-4 py-5 flex flex-col items-center justify-center text-center gap-2">
+          <div className="w-36 shrink-0 border-l border-border-subtle bg-surface-container-lowest px-4 py-5 flex flex-col items-center justify-center text-center gap-2">
             {salesInfo.avatarUrl ? (
               <img src={salesInfo.avatarUrl} alt={`Foto ${salesInfo.name}`} className="h-10 w-10 rounded-full border border-border-subtle object-cover" />
             ) : (
