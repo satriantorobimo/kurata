@@ -83,16 +83,16 @@ export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
 
         {/* Right: Sales contact */}
         {property.badge === "exclusive" && salesInfo ? (
-          <div className="w-36 shrink-0 px-4 py-5 flex flex-col items-center text-center gap-3">
+          <div className="w-[148px] shrink-0 px-3 py-5 flex flex-col items-center text-center gap-3">
             <div className="flex items-center gap-2">
               {salesInfo.avatarUrl ? (
-                <img src={salesInfo.avatarUrl} alt={`Foto ${salesInfo.name}`} className="h-14 w-14 rounded-full border border-border-subtle object-cover" />
+                <img src={salesInfo.avatarUrl} alt={`Foto ${salesInfo.name}`} className="h-12 w-12 shrink-0 rounded-full object-cover" />
               ) : (
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-headline-sm font-bold text-primary">{salesInfo.name.slice(0, 1).toUpperCase()}</div>
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-label-md font-bold text-primary">{salesInfo.name.slice(0, 1).toUpperCase()}</div>
               )}
               <div className="text-left min-w-0">
                 <p className="text-label-sm text-on-surface-variant leading-tight">Hubungi:</p>
-                <p className="text-label-sm font-medium text-on-surface leading-tight">{salesInfo.name}</p>
+                <p className="truncate text-label-sm font-medium text-on-surface leading-tight">{salesInfo.name}</p>
               </div>
             </div>
             {salesInfo.phone ? (
@@ -103,7 +103,7 @@ export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
                 className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-label-sm font-medium text-on-primary transition-colors hover:bg-primary/90"
               >
                 <MessageCircle className="h-4 w-4" />
-                Chat via WhatsApp
+                Hubungi
               </a>
             ) : null}
           </div>
