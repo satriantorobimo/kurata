@@ -35,5 +35,8 @@ export function createMockPropertyDetail(property: Property): PropertyDetail {
     brokerCity: null,
     brokerPhone: null,
     brokerAvatarKey: null,
+    salesName: null,
+    salesPhone: null,
+    salesAvatarUrl: null,
   };
 }

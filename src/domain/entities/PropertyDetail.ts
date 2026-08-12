@@ -16,4 +16,7 @@ export interface PropertyDetail {
   brokerCity: string | null;
   brokerPhone: string | null;
   brokerAvatarKey: string | null;
+  salesName: string | null;
+  salesPhone: string | null;
+  salesAvatarUrl: string | null;
 }

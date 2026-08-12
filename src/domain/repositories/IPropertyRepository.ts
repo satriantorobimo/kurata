@@ -27,6 +27,7 @@ export interface PropertySearchResult {
   total: number;
   page: number;
   perPage: number;
+  salesMap: Map<string, { name: string; phone: string; avatarUrl: string | null }>;
 }
 
 /**

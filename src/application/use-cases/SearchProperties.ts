@@ -23,6 +23,7 @@ export class SearchProperties {
       page: result.page,
       perPage: result.perPage,
       totalPages,
+      salesMap: result.salesMap,
     };
   }
 }

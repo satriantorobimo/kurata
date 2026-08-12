@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
 
 import { createPropertyAction, updatePropertyAction, type CmsActionResult } from "@/app/cms/actions";
-import type { CmsBrokerOption, CmsPropertyDetail } from "@/infrastructure/repositories/PostgresCmsRepository";
+import type { CmsBrokerOption, CmsPropertyDetail, CmsSalesOption } from "@/infrastructure/repositories/PostgresCmsRepository";
 import { Card } from "@/presentation/components/cms/Card";
 import { Checkbox, SelectInput, TextArea, TextInput } from "@/presentation/components/cms/Field";
 import { ImageUpload } from "@/presentation/components/cms/ImageUpload";
@@ -29,6 +29,7 @@ interface PropertyFormProps {
   propertyId?: string;
   initial?: CmsPropertyDetail;
   brokers: CmsBrokerOption[];
+  sales: CmsSalesOption[];
 }
 
 function parseFacilities(value: string): string[] {
@@ -42,7 +43,7 @@ function joinFacilities(value: string[] | null | undefined): string {
   return (value ?? []).join(", ");
 }
 
-export function PropertyForm({ mode, propertyId, initial, brokers }: PropertyFormProps) {
+export function PropertyForm({ mode, propertyId, initial, brokers, sales }: PropertyFormProps) {
   const router = useRouter();
   const [notice, setNotice] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -69,6 +70,7 @@ export function PropertyForm({ mode, propertyId, initial, brokers }: PropertyFor
       listedAt: String(formData.get("listedAt") ?? "").trim() || null,
       contactLabel: String(formData.get("contactLabel") ?? "").trim() || null,
       listedBy: String(formData.get("listedBy") ?? "") || null,
+      salesId: String(formData.get("salesId") ?? "") || null,
       isPublished,
       reviewStatus: isPublished ? "published" : "draft",
     };
@@ -129,6 +131,7 @@ export function PropertyForm({ mode, propertyId, initial, brokers }: PropertyFor
         <div className="text-headline-sm font-headline-sm text-on-surface">Penayangan & penanggung jawab</div>
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <SelectInput id="listedBy" name="listedBy" label="Ditayangkan oleh (Mitra)" options={[{ value: "", label: "Kurata (tanpa mitra)" }, ...brokers.map((broker) => ({ value: broker.id, label: `${broker.fullName} — ${broker.email}` }))]} defaultValue={initial?.listedBy ?? ""} hint="Kosongkan bila dikelola langsung oleh Kurata." />
+          <SelectInput id="salesId" name="salesId" label="Sales / Marketing" options={[{ value: "", label: "Tidak ditugaskan" }, ...sales.map((s) => ({ value: s.id, label: `${s.name} — ${s.email}` }))]} defaultValue={initial?.salesId ?? ""} hint="Sales yang bertanggung jawab atas listing ini." />
           <TextInput id="contactLabel" name="contactLabel" label="Label kontak" placeholder="Contoh: Hubungi WhatsApp" defaultValue={initial?.contactLabel ?? undefined} />
           <TextInput id="listedAt" name="listedAt" label="Tanggal listing" placeholder="Contoh: 2026-08-09" defaultValue={initial?.listedAt ?? undefined} />
         </div>

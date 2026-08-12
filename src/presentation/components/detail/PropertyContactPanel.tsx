@@ -9,7 +9,9 @@ export function PropertyContactPanel({ property }: { property: PropertyDetailDTO
       <p className="mt-1 text-2xl font-bold text-primary">{property.price}</p>
 
       <div className="mt-5 border-t border-border-subtle pt-4">
-        {property.brokerName ? (
+        {property.badge === "exclusive" && property.salesName ? (
+          <SalesSection name={property.salesName} phone={property.salesPhone} avatarUrl={property.salesAvatarUrl} />
+        ) : property.brokerName ? (
           <BrokerSection name={property.brokerName} city={property.brokerCity} phone={property.brokerPhone} avatarKey={property.brokerAvatarKey} />
         ) : (
           <FallbackSection label={property.contactLabel} />
@@ -62,6 +64,33 @@ function FallbackSection({ label }: { label: string }) {
         <MessageCircle className="h-4 w-4" />
         Hubungi {label}
       </button>
+    </>
+  );
+}
+
+function SalesSection({ name, phone, avatarUrl }: { name: string; phone: string | null; avatarUrl: string | null }) {
+  const initial = name.slice(0, 1).toUpperCase();
+
+  return (
+    <>
+      <p className="text-label-sm font-medium text-on-surface-variant">Hubungi:</p>
+      <div className="mt-3 flex items-center gap-3">
+        {avatarUrl ? (
+          <img src={avatarUrl} alt={`Foto ${name}`} className="h-10 w-10 rounded-full border border-border-subtle object-cover" />
+        ) : (
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-label-sm font-bold text-primary">{initial}</div>
+        )}
+        <div className="min-w-0">
+          <p className="truncate text-label-md font-label-md text-on-surface">{name}</p>
+          <p className="text-label-sm text-on-surface-variant">Sales & Marketing</p>
+        </div>
+      </div>
+      {phone ? (
+        <a href={`https://wa.me/${phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label-md font-label-md text-on-primary transition-colors hover:bg-primary/90">
+          <MessageCircle className="h-4 w-4" />
+          Chat via WhatsApp
+        </a>
+      ) : null}
     </>
   );
 }

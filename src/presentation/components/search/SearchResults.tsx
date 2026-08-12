@@ -4,9 +4,10 @@ import type { PropertyDTO } from "@/application/dto/PropertyDTO";
 
 interface SearchResultsProps {
   properties: PropertyDTO[];
+  salesMap: Map<string, { name: string; phone: string; avatarUrl: string | null }>;
 }
 
-export function SearchResults({ properties }: SearchResultsProps) {
+export function SearchResults({ properties, salesMap }: SearchResultsProps) {
   if (properties.length === 0) {
     return (
       <div className="flex min-h-80 flex-col items-center justify-center rounded-xl border border-dashed border-outline-variant bg-surface-container-low p-8 text-center">
@@ -19,7 +20,9 @@ export function SearchResults({ properties }: SearchResultsProps) {
 
   return (
     <div className="grid grid-cols-1 gap-gutter sm:grid-cols-2 xl:grid-cols-3">
-      {properties.map((property) => <PropertyCard key={property.id} property={property} />)}
+      {properties.map((property) => (
+        <PropertyCard key={property.id} property={property} salesInfo={salesMap.get(property.id) ?? null} />
+      ))}
     </div>
   );
 }

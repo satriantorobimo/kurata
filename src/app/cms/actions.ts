@@ -16,6 +16,7 @@ import type {
   KurataRole,
   ReviewStatus,
   VerificationStatus,
+  CmsSalesInput,
 } from "@/infrastructure/repositories/PostgresCmsRepository";
 
 export interface CmsActionResult {
@@ -382,6 +383,57 @@ export async function updateUserVerificationAction(userId: string, input: { stat
   }
 }
 
+// ------------------------------------------------------------------- Sales
+export async function createSalesAction(input: Omit<CmsSalesInput, "id">): Promise<CmsActionResult> {
+  try {
+    const actor = await requireSuperAdmin();
+
+    const errors = validateSalesInput(input);
+    if (Object.keys(errors).length > 0) return { ok: false, message: "Periksa kembali data sales.", fieldErrors: errors };
+
+    if (await container.cmsRepo.salesEmailExists(input.email)) return { ok: false, fieldErrors: { email: "Email sales sudah terdaftar." } };
+
+    const id = randomUUID();
+    await container.cmsRepo.createSales({ ...input, id });
+    revalidatePath("/cms/sales");
+    logAudit({ actorUserId: actor.userId, eventType: "sales.create", entityType: "sales", entityId: id });
+    return { ok: true, message: "Sales berhasil dibuat." };
+  } catch {
+    return { ok: false, message: "Operasi gagal. Coba lagi." };
+  }
+}
+
+export async function updateSalesAction(id: string, input: Omit<CmsSalesInput, "id">): Promise<CmsActionResult> {
+  try {
+    const actor = await requireSuperAdmin();
+
+    const errors = validateSalesInput(input);
+    if (Object.keys(errors).length > 0) return { ok: false, message: "Periksa kembali data sales.", fieldErrors: errors };
+
+    if (await container.cmsRepo.salesEmailExists(input.email, id)) return { ok: false, fieldErrors: { email: "Email sales sudah digunakan." } };
+
+    await container.cmsRepo.updateSales(id, input);
+    revalidatePath("/cms/sales");
+    revalidatePath("/cms/sales/[id]", "page");
+    logAudit({ actorUserId: actor.userId, eventType: "sales.update", entityType: "sales", entityId: id });
+    return { ok: true, message: "Sales berhasil diperbarui." };
+  } catch {
+    return { ok: false, message: "Operasi gagal. Coba lagi." };
+  }
+}
+
+export async function deleteSalesAction(id: string): Promise<CmsActionResult> {
+  try {
+    const actor = await requireSuperAdmin();
+    await container.cmsRepo.deleteSales(id);
+    revalidatePath("/cms/sales");
+    logAudit({ actorUserId: actor.userId, eventType: "sales.delete", entityType: "sales", entityId: id });
+    return { ok: true, message: "Sales berhasil dihapus." };
+  } catch {
+    return { ok: false, message: "Operasi gagal. Coba lagi." };
+  }
+}
+
 // ---------------------------------------------------------------- Validators
 function validatePropertyInput(input: Omit<CmsPropertyInput, "id">) {
   const errors: Record<string, string> = {};
@@ -417,4 +469,13 @@ function validateStatisticInput(input: { label: string; value: string; icon: str
 
 function isReviewStatus(status: string): status is ReviewStatus {
   return REVIEW_STATUSES.includes(status as ReviewStatus);
+}
+
+function validateSalesInput(input: { name: string; email: string; phone: string; location: string; avatarUrl: string | null }) {
+  const errors: Record<string, string> = {};
+  if (!input.name.trim() || input.name.trim().length < 2) errors.name = "Nama minimal 2 karakter.";
+  if (!EMAIL_PATTERN.test(input.email)) errors.email = "Masukkan email yang valid.";
+  if (!input.phone.trim() || input.phone.length < 9 || input.phone.length > 16) errors.phone = "Nomor telepon tidak valid (9–16 digit).";
+  if (!input.location.trim()) errors.location = "Lokasi wajib diisi.";
+  return errors;
 }

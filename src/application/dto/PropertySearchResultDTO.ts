@@ -6,4 +6,5 @@ export interface PropertySearchResultDTO {
   page: number;
   perPage: number;
   totalPages: number;
+  salesMap: Map<string, { name: string; phone: string; avatarUrl: string | null }>;
 }

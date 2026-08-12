@@ -112,7 +112,7 @@ export default async function SearchPropertiesPage({
             />
             <SearchToolbar total={result.total} page={result.page} totalPages={result.totalPages} sort={sort} />
             <div className="pt-6">
-              <SearchResults properties={result.properties} />
+              <SearchResults properties={result.properties} salesMap={result.salesMap} />
             </div>
           </div>
         </div>

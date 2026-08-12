@@ -1,6 +1,7 @@
 import { bigint, boolean, index, integer, jsonb, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 import { content } from "./content";
+import { sales } from "./sales";
 import { users } from "./users";
 
 export const properties = content.table("properties", {
@@ -26,6 +27,7 @@ export const properties = content.table("properties", {
   isPublished: boolean("is_published").notNull().default(true),
   reviewStatus: varchar("review_status", { length: 30 }).notNull().default("draft"),
   listedBy: uuid("listed_by").references(() => users.id, { onDelete: "set null" }),
+  salesId: varchar("sales_id", { length: 50 }).references(() => sales.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
@@ -36,6 +38,7 @@ export const properties = content.table("properties", {
   index("properties_area_index").on(table.areaSqm),
   index("properties_location_index").on(table.province, table.city),
   index("properties_listed_by_index").on(table.listedBy),
+  index("properties_sales_id_index").on(table.salesId),
 ]);
 
 export const propertyImages = content.table("property_images", {

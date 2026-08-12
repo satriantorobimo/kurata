@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { GetCmsBrokerOptions, GetCmsPropertyDetail, GetCmsPropertyImages } from "@/application/use-cases/cms/GetCmsProperties";
+import { GetCmsSalesOptions } from "@/application/use-cases/cms/GetCmsSales";
 import type { CmsPropertyDetail, CmsPropertyImage } from "@/infrastructure/repositories/PostgresCmsRepository";
 import { container } from "@/infrastructure/di/container";
 import { PageHeader } from "@/presentation/components/cms/PageHeader";
@@ -18,10 +19,11 @@ export default async function CmsPropertyEditPage({ params }: { params: Promise<
   const { id } = await params;
   const { canWrite } = await getCmsAccess();
 
-  const [property, images, brokers] = await Promise.all([
+  const [property, images, brokers, sales] = await Promise.all([
     new GetCmsPropertyDetail(container.cmsRepo).execute(id),
     new GetCmsPropertyImages(container.cmsRepo).execute(id),
     new GetCmsBrokerOptions(container.cmsRepo).execute(),
+    new GetCmsSalesOptions(container.cmsRepo).execute(),
   ]);
 
   if (!property) notFound();
@@ -35,7 +37,7 @@ export default async function CmsPropertyEditPage({ params }: { params: Promise<
       <div className="mt-5">
         <PageHeader eyebrow="Kurata CMS" title={canWrite ? "Edit aset" : "Detail aset"} description={property.title} actions={<StatusBadge value={property.isPublished ? "published" : property.reviewStatus} />} />
       </div>
-      {canWrite ? <PropertyForm mode="edit" propertyId={id} initial={property} brokers={brokers} /> : <ReadOnlyPropertyDetail property={property} />}
+      {canWrite ? <PropertyForm mode="edit" propertyId={id} initial={property} brokers={brokers} sales={sales} /> : <ReadOnlyPropertyDetail property={property} />}
       <div className="mt-6">{canWrite ? <PropertyImagesManager propertyId={id} images={images} /> : <ReadOnlyImages images={images} />}</div>
     </>
   );

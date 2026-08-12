@@ -19,5 +19,8 @@ export function mapPropertyToDTO(property: Property): PropertyDTO {
     badgeLabel: property.badgeLabel,
     imageUrl: property.imageUrl,
     isFavorited: property.isFavorited,
+    salesName: null,
+    salesPhone: null,
+    salesAvatarUrl: null,
   };
 }

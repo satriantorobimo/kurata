@@ -1,0 +1,1 @@
+ALTER TABLE "content"."sales" ADD COLUMN "avatar_url" text;

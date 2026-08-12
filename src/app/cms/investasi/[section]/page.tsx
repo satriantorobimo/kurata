@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { GetCmsSectionDetail } from "@/application/use-cases/cms/GetCmsContent";
+import { GetCmsSalesOptions } from "@/application/use-cases/cms/GetCmsSales";
 import { container } from "@/infrastructure/di/container";
 import { PageHeader } from "@/presentation/components/cms/PageHeader";
 import { InvestasiSectionEditor } from "@/presentation/components/cms/investasi/InvestasiSectionEditor";
@@ -41,7 +42,10 @@ export default async function CmsInvestasiSectionEditPage({ params }: { params: 
   const id = SLUG_TO_ID[slug];
   if (!id) notFound();
 
-  const section = await new GetCmsSectionDetail(container.cmsRepo).execute(id);
+  const [section, salesOptions] = await Promise.all([
+    new GetCmsSectionDetail(container.cmsRepo).execute(id),
+    new GetCmsSalesOptions(container.cmsRepo).execute(),
+  ]);
   if (!section) redirect("/cms/investasi");
 
   const label = SECTION_LABELS[id] ?? slug;
@@ -55,7 +59,7 @@ export default async function CmsInvestasiSectionEditPage({ params }: { params: 
       <div className="mt-5">
         <PageHeader eyebrow="Kurata CMS" title={canWrite ? `Edit ${label}` : label} description={`ID: ${section.id}`} />
       </div>
-      <InvestasiSectionEditor section={section} canWrite={canWrite} />
+      <InvestasiSectionEditor section={section} canWrite={canWrite} salesOptions={salesOptions} />
     </>
   );
 }

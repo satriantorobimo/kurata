@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { LoaderCircle, Plus, Trash2 } from "lucide-react";
 
 import { updateContentSectionAction, type CmsActionResult } from "@/app/cms/actions";
-import type { CmsContentSection } from "@/infrastructure/repositories/PostgresCmsRepository";
+import type { CmsContentSection, CmsSalesOption } from "@/infrastructure/repositories/PostgresCmsRepository";
 import { Card } from "@/presentation/components/cms/Card";
 import { Checkbox, TextInput } from "@/presentation/components/cms/Field";
 import { ImageUpload } from "@/presentation/components/cms/ImageUpload";
@@ -30,11 +30,11 @@ const SCORE_OPTIONS = [
 
 interface BrokerItem { name: string; location: string; rating: number; reviewCount: number; imagePath: string }
 
-interface Props { section: CmsContentSection; canWrite: boolean }
+interface Props { section: CmsContentSection; canWrite: boolean; salesOptions: CmsSalesOption[] }
 
 const inputClasses = "w-full rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-2 text-body-md text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
 
-export function InvestasiSectionEditor({ section, canWrite }: Props) {
+export function InvestasiSectionEditor({ section, canWrite, salesOptions }: Props) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [notice, setNotice] = useState("");
@@ -68,8 +68,8 @@ export function InvestasiSectionEditor({ section, canWrite }: Props) {
       </Card>
 
       {section.id === "investasi-categories" ? <CategoriesEditor data={asArray(section.content)} onSave={(d) => save(d)} canWrite={canWrite} /> : null}
-      {section.id === "investasi-listings" ? <ListingCardsEditor data={asArray(section.content)} onSave={(d) => save(d)} canWrite={canWrite} withArea /> : null}
-      {section.id === "investasi-similar" ? <ListingCardsEditor data={asArray(section.content)} onSave={(d) => save(d)} canWrite={canWrite} withArea={false} /> : null}
+      {section.id === "investasi-listings" ? <ListingCardsEditor data={asArray(section.content)} onSave={(d) => save(d)} canWrite={canWrite} withArea salesOptions={salesOptions} /> : null}
+      {section.id === "investasi-similar" ? <ListingCardsEditor data={asArray(section.content)} onSave={(d) => save(d)} canWrite={canWrite} withArea={false} salesOptions={salesOptions} /> : null}
       {section.id === "investasi-features" ? <CategoriesEditor data={asArray(section.content)} onSave={(d) => save(d)} canWrite={canWrite} /> : null}
       {section.id === "investasi-opportunities" ? <TextListEditor data={asArray<string>(section.content)} onSave={(d) => save(d)} canWrite={canWrite} /> : null}
       {section.id === "investasi-area-analysis" ? <RatingEditor data={asArray(section.content)} onSave={(d) => save(d)} canWrite={canWrite} /> : null}
@@ -131,9 +131,9 @@ function CategoriesEditor({ data, onSave, canWrite }: { data: CategoryItem[]; on
 }
 
 // --------------------------------------------------------------- Listings
-interface ListingItem { title: string; location: string; area?: string; price: string; imageUrl: string }
+interface ListingItem { title: string; location: string; area?: string; price: string; imageUrl: string; salesId?: string }
 
-function ListingCardsEditor({ data, onSave, canWrite, withArea }: { data: ListingItem[]; onSave(data: ListingItem[]): void; canWrite: boolean; withArea: boolean }) {
+function ListingCardsEditor({ data, onSave, canWrite, withArea, salesOptions }: { data: ListingItem[]; onSave(data: ListingItem[]): void; canWrite: boolean; withArea: boolean; salesOptions: CmsSalesOption[] }) {
   const [items, setItems] = useState<ListingItem[]>(data);
   const [pending, startTransition] = useTransition();
 
@@ -166,6 +166,20 @@ function ListingCardsEditor({ data, onSave, canWrite, withArea }: { data: Listin
               <TextInput id={`price-${i}`} name={`price-${i}`} label="Harga" value={item.price} onChange={(e) => setItem(i, { price: e.target.value })} disabled={!canWrite} />
               <div className="sm:col-span-2">
                 <ImageUpload name={`img-${i}`} label="Gambar" currentUrl={item.imageUrl} disabled={!canWrite} onUrlChange={(url) => setItem(i, { imageUrl: url })} hint={canWrite ? "Pilih & unggah gambar baru" : undefined} />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="text-label-md font-label-md text-on-surface">Sales / Marketing</label>
+                <select
+                  value={item.salesId ?? ""}
+                  onChange={(e) => setItem(i, { salesId: e.target.value || undefined })}
+                  disabled={!canWrite}
+                  className="mt-2 w-full rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-2 text-body-md text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                >
+                  <option value="">Tidak ditugaskan</option>
+                  {salesOptions.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name} — {s.email}</option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Heart, MapPin, Ruler, FileText } from "lucide-react";
@@ -7,11 +8,18 @@ import { cn } from "@/lib/cn";
 import { Badge } from "@/presentation/components/shared/Badge";
 import type { PropertyDTO } from "@/application/dto/PropertyDTO";
 
-interface PropertyCardProps {
-  property: PropertyDTO;
+interface SalesInfo {
+  name: string;
+  phone: string;
+  avatarUrl: string | null;
 }
 
-export function PropertyCard({ property }: PropertyCardProps) {
+interface PropertyCardProps {
+  property: PropertyDTO;
+  salesInfo?: SalesInfo | null;
+}
+
+export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
   const [isFavorited, setIsFavorited] = useState(property.isFavorited);
 
   return (
@@ -70,6 +78,20 @@ export function PropertyCard({ property }: PropertyCardProps) {
         <div className="font-headline-sm text-headline-sm text-primary">
           {property.price}
         </div>
+
+        {property.badge === "exclusive" && salesInfo ? (
+          <div className="mt-4 flex items-center gap-3 border-t border-border-subtle pt-4">
+            {salesInfo.avatarUrl ? (
+              <img src={salesInfo.avatarUrl} alt={`Foto ${salesInfo.name}`} className="h-8 w-8 rounded-full border border-border-subtle object-cover" />
+            ) : (
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-label-sm font-bold text-primary">{salesInfo.name.slice(0, 1).toUpperCase()}</div>
+            )}
+            <div className="min-w-0">
+              <p className="text-label-sm text-on-surface-variant">Hubungi:</p>
+              <p className="truncate text-label-md font-medium text-on-surface">{salesInfo.name}</p>
+            </div>
+          </div>
+        ) : null}
       </Link>
     </div>
   );

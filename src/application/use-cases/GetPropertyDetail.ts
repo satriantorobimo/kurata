@@ -25,6 +25,9 @@ export class GetPropertyDetail {
       brokerCity: detail.brokerCity,
       brokerPhone: detail.brokerPhone,
       brokerAvatarKey: detail.brokerAvatarKey,
+      salesName: detail.salesName,
+      salesPhone: detail.salesPhone,
+      salesAvatarUrl: detail.salesAvatarUrl,
     };
   }
 }

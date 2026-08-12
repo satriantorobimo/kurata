@@ -16,4 +16,7 @@ export interface PropertyDTO {
   badgeLabel: string;
   imageUrl: string;
   isFavorited: boolean;
+  salesName: string | null;
+  salesPhone: string | null;
+  salesAvatarUrl: string | null;
 }

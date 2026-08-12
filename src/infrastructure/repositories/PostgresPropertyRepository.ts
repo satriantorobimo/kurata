@@ -13,7 +13,7 @@ import type {
   PropertySearchResult,
 } from "../../domain/repositories/IPropertyRepository";
 import { getDatabase } from "../database/client";
-import { properties, propertyImages, userProfiles, users } from "../database/schema";
+import { properties, propertyImages, sales, userProfiles, users } from "../database/schema";
 
 const VALID_CERTIFICATES = ["SHM", "HGB", "HGU", "HP"] as const;
 const VALID_BADGES = ["exclusive", "broker"] as const;
@@ -112,6 +112,27 @@ export class PostgresPropertyRepository implements IPropertyRepository {
       }
     }
 
+    let salesName: string | null = null;
+    let salesPhone: string | null = null;
+    let salesAvatarUrl: string | null = null;
+
+    if (property.salesId) {
+      const [salesRow] = await database
+        .select({
+          name: sales.name,
+          phone: sales.phone,
+          avatarUrl: sales.avatarUrl,
+        })
+        .from(sales)
+        .where(eq(sales.id, property.salesId));
+
+      if (salesRow) {
+        salesName = salesRow.name;
+        salesPhone = salesRow.phone;
+        salesAvatarUrl = salesRow.avatarUrl ?? null;
+      }
+    }
+
     return {
       property: mapRow(property),
       description: property.description ?? "",
@@ -128,6 +149,9 @@ export class PostgresPropertyRepository implements IPropertyRepository {
       brokerCity,
       brokerPhone,
       brokerAvatarKey,
+      salesName,
+      salesPhone,
+      salesAvatarUrl,
     };
   }
 
@@ -241,11 +265,29 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     const totalPages = Math.max(1, Math.ceil(total / perPage));
     const safePage = Math.min(page, totalPages);
 
+    const salesMap = new Map<string, { name: string; phone: string; avatarUrl: string | null }>();
+    const propertiesWithSales = rows.filter((r) => r.salesId);
+    if (propertiesWithSales.length > 0) {
+      const salesIds = [...new Set(propertiesWithSales.map((r) => r.salesId!).filter(Boolean))];
+      const salesRows = await database
+        .select({ id: sales.id, name: sales.name, phone: sales.phone, avatarUrl: sales.avatarUrl })
+        .from(sales)
+        .where(inArray(sales.id, salesIds));
+
+      const salesById = new Map(salesRows.map((s) => [s.id, { name: s.name, phone: s.phone, avatarUrl: s.avatarUrl ?? null }]));
+
+      for (const row of propertiesWithSales) {
+        const salesInfo = salesById.get(row.salesId!);
+        if (salesInfo) salesMap.set(row.id, salesInfo);
+      }
+    }
+
     return {
       properties: rows.map(mapRow),
       total,
       page: safePage,
       perPage,
+      salesMap,
     };
   }
 }

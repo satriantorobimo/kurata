@@ -13,6 +13,7 @@ import {
   passwordCredentials,
   properties,
   propertyImages,
+  sales,
   siteStatistics,
   userProfiles,
   userVerifications,
@@ -65,6 +66,8 @@ export interface CmsPropertyDetail extends CmsProperty {
   listedBy: string | null;
   contactLabel: string | null;
   listedByName: string | null;
+  salesId: string | null;
+  salesName: string | null;
 }
 
 export interface CmsPropertyImage {
@@ -94,6 +97,7 @@ export interface CmsPropertyInput {
   listedAt: string | null;
   contactLabel: string | null;
   listedBy: string | null;
+  salesId: string | null;
   reviewStatus?: string;
   isPublished?: boolean;
 }
@@ -202,6 +206,35 @@ export interface CmsUserInput {
   marketingConsent: boolean;
 }
 
+export interface CmsSalesListItem {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  location: string;
+  avatarUrl: string | null;
+  createdAt: string;
+}
+
+export interface CmsSalesDetail extends CmsSalesListItem {
+  updatedAt: string;
+}
+
+export interface CmsSalesInput {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  location: string;
+  avatarUrl: string | null;
+}
+
+export interface CmsSalesOption {
+  id: string;
+  name: string;
+  email: string;
+}
+
 function toDateTime(date: Date): string {
   return new Date(date).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
@@ -304,9 +337,11 @@ export class PostgresCmsRepository {
       .select({
         property: properties,
         listedByName: users.fullName,
+        salesName: sales.name,
       })
       .from(properties)
       .leftJoin(users, eq(properties.listedBy, users.id))
+      .leftJoin(sales, eq(properties.salesId, sales.id))
       .where(eq(properties.id, id));
 
     if (!row[0]) return null;
@@ -324,6 +359,8 @@ export class PostgresCmsRepository {
       listedBy: row[0].property.listedBy,
       contactLabel: row[0].property.contactLabel,
       listedByName: row[0].listedByName ?? null,
+      salesId: row[0].property.salesId ?? null,
+      salesName: row[0].salesName ?? null,
     };
   }
 
@@ -355,6 +392,7 @@ export class PostgresCmsRepository {
         isPublished: input.isPublished ?? false,
         reviewStatus: input.reviewStatus ?? "draft",
         listedBy: input.listedBy,
+        salesId: input.salesId,
         createdAt: now,
         updatedAt: now,
       })
@@ -385,6 +423,7 @@ export class PostgresCmsRepository {
         listedAt: input.listedAt,
         contactLabel: input.contactLabel,
         listedBy: input.listedBy,
+        salesId: input.salesId,
         isPublished: input.isPublished ?? false,
         reviewStatus: input.reviewStatus ?? "draft",
         updatedAt: new Date(),
@@ -778,6 +817,93 @@ export class PostgresCmsRepository {
   async countSuperAdmins(): Promise<number> {
     const [row] = await getDatabase().select({ value: count() }).from(users).where(eq(users.role, "super_admin"));
     return row?.value ?? 0;
+  }
+
+  // ------------------------------------------------------------------- Sales
+  async listSales(keyword = ""): Promise<CmsSalesListItem[]> {
+    const conditions = [
+      keyword ? or(like(sales.name, `%${keyword}%`), like(sales.email, `%${keyword}%`), like(sales.location, `%${keyword}%`)) : undefined,
+    ].filter(Boolean) as SQL[];
+
+    const rows = await getDatabase()
+      .select()
+      .from(sales)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(sales.createdAt))
+      .limit(300);
+
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      phone: row.phone,
+      location: row.location,
+      avatarUrl: row.avatarUrl ?? null,
+      createdAt: toDateTime(row.createdAt),
+    }));
+  }
+
+  async getSalesById(id: string): Promise<CmsSalesDetail | null> {
+    const [row] = await getDatabase().select().from(sales).where(eq(sales.id, id));
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      phone: row.phone,
+      location: row.location,
+      avatarUrl: row.avatarUrl ?? null,
+      createdAt: toDateTime(row.createdAt),
+      updatedAt: toDateTime(row.updatedAt),
+    };
+  }
+
+  async createSales(input: CmsSalesInput): Promise<void> {
+    const now = new Date();
+    await getDatabase().insert(sales).values({
+      id: input.id,
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      location: input.location,
+      avatarUrl: input.avatarUrl,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  async updateSales(id: string, input: Omit<CmsSalesInput, "id">): Promise<void> {
+    await getDatabase()
+      .update(sales)
+      .set({
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        location: input.location,
+        avatarUrl: input.avatarUrl,
+        updatedAt: new Date(),
+      })
+      .where(eq(sales.id, id));
+  }
+
+  async deleteSales(id: string): Promise<void> {
+    await getDatabase().delete(sales).where(eq(sales.id, id));
+  }
+
+  async listSalesOptions(): Promise<CmsSalesOption[]> {
+    const rows = await getDatabase()
+      .select({ id: sales.id, name: sales.name, email: sales.email })
+      .from(sales)
+      .orderBy(asc(sales.name));
+
+    return rows;
+  }
+
+  async salesEmailExists(email: string, exceptId?: string): Promise<boolean> {
+    const conditions = [eq(sales.email, email.toLowerCase()), exceptId ? ne(sales.id, exceptId) : undefined].filter(Boolean);
+    const [row] = await getDatabase().select({ value: count() }).from(sales).where(and(...conditions));
+    return (row?.value ?? 0) > 0;
   }
 }
 
