@@ -19,7 +19,7 @@ export function SearchResults({ properties, salesMap }: SearchResultsProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-gutter sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-gutter sm:grid-cols-2">
       {properties.map((property) => (
         <PropertyCard key={property.id} property={property} salesInfo={salesMap.get(property.id) ?? null} />
       ))}
