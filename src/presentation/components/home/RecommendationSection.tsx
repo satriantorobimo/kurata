@@ -5,9 +5,10 @@ import type { PropertyDTO } from "@/application/dto/PropertyDTO";
 
 interface RecommendationSectionProps {
   properties: PropertyDTO[];
+  salesMap: Map<string, { name: string; phone: string; avatarUrl: string | null }>;
 }
 
-export function RecommendationSection({ properties }: RecommendationSectionProps) {
+export function RecommendationSection({ properties, salesMap }: RecommendationSectionProps) {
   return (
     <section className="w-full container-main mb-section-gap">
       {/* Header */}
@@ -31,7 +32,7 @@ export function RecommendationSection({ properties }: RecommendationSectionProps
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
         {properties.map((property) => (
-          <PropertyCard key={property.id} property={property} />
+          <PropertyCard key={property.id} property={property} salesInfo={salesMap.get(property.id) ?? null} />
         ))}
       </div>
     </section>

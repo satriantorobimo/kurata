@@ -2,14 +2,18 @@ import { IPropertyRepository } from "../../domain/repositories/IPropertyReposito
 import { PropertyDTO } from "../dto/PropertyDTO";
 import { mapPropertyToDTO } from "../mappers/PropertyMapper";
 
-/**
- * Use case: Retrieve recommended properties for the home page.
- */
-export class GetRecommendedProperties {
-  constructor(private readonly propertyRepository: IPropertyRepository) {}
+export interface RecommendedResult {
+  properties: PropertyDTO[];
+  salesMap: Map<string, { name: string; phone: string; avatarUrl: string | null }>;
+}
 
-  async execute(): Promise<PropertyDTO[]> {
+export class GetRecommendedProperties {
+  constructor(private readonly propertyRepository: IPropertyRepository & { getSalesForProperties(propertyIds: string[]): Promise<Map<string, { name: string; phone: string; avatarUrl: string | null }>> }) {}
+
+  async execute(): Promise<RecommendedResult> {
     const properties = await this.propertyRepository.getRecommended();
-    return properties.map(mapPropertyToDTO);
+    const dtos = properties.map(mapPropertyToDTO);
+    const salesMap = await this.propertyRepository.getSalesForProperties(properties.map((p) => p.id));
+    return { properties: dtos, salesMap };
   }
 }

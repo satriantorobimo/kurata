@@ -65,6 +65,34 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     return rows.map(mapRow);
   }
 
+  async getSalesForProperties(propertyIds: string[]): Promise<Map<string, { name: string; phone: string; avatarUrl: string | null }>> {
+    const map = new Map<string, { name: string; phone: string; avatarUrl: string | null }>();
+    if (propertyIds.length === 0) return map;
+
+    const database = getDatabase();
+    const rows = await database
+      .select({ propertyId: properties.id, salesId: properties.salesId })
+      .from(properties)
+      .where(and(inArray(properties.id, propertyIds), sql`${properties.salesId} IS NOT NULL`));
+
+    const salesIds = [...new Set(rows.map((r) => r.salesId!).filter(Boolean))];
+    if (salesIds.length === 0) return map;
+
+    const salesRows = await database
+      .select({ id: sales.id, name: sales.name, phone: sales.phone, avatarUrl: sales.avatarUrl })
+      .from(sales)
+      .where(inArray(sales.id, salesIds));
+
+    const salesById = new Map(salesRows.map((s) => [s.id, { name: s.name, phone: s.phone, avatarUrl: s.avatarUrl ?? null }]));
+
+    for (const row of rows) {
+      const s = salesById.get(row.salesId!);
+      if (s) map.set(row.propertyId, s);
+    }
+
+    return map;
+  }
+
   async getById(id: string): Promise<PropertyDetail | null> {
     const database = getDatabase();
     const [row, imageRows] = await Promise.all([

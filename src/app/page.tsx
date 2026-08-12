@@ -11,7 +11,7 @@ export default async function HomePage() {
   const getProperties = new GetRecommendedProperties(container.propertyRepo);
   const getStats = new GetStatistics(container.statisticRepo);
 
-  const [properties, stats] = await Promise.all([
+  const [result, stats] = await Promise.all([
     getProperties.execute(),
     getStats.execute(),
   ]);
@@ -21,7 +21,7 @@ export default async function HomePage() {
       <HeroSection />
       <HighlightCards />
       <StatisticsBar stats={stats} />
-      <RecommendationSection properties={properties} />
+      <RecommendationSection properties={result.properties} salesMap={result.salesMap} />
       <ValueStrip />
     </div>
   );

@@ -103,9 +103,9 @@ export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
             <div className="flex items-center gap-2">
               <div className="relative shrink-0">
                 {salesInfo.avatarUrl ? (
-                  <img src={salesInfo.avatarUrl} alt={`Foto ${salesInfo.name}`} className="h-[38px] w-[38px] shrink-0 rounded-full object-cover border-[1.5px] border-white shadow-sm" />
+                  <img src={salesInfo.avatarUrl} alt={`Foto ${salesInfo.name}`} className="h-[50px] w-[50px] shrink-0 rounded-full object-cover border-[1.5px] border-white shadow-sm" />
                 ) : (
-                  <div className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-[#144834]/10 text-xs font-bold text-[#144834] border-[1.5px] border-white shadow-sm">
+                  <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-[#144834]/10 text-xs font-bold text-[#144834] border-[1.5px] border-white shadow-sm">
                     {salesInfo.name.slice(0, 1).toUpperCase()}
                   </div>
                 )}
