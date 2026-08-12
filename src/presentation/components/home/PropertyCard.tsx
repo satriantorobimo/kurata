@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { Heart, MapPin, Ruler, FileText } from "lucide-react";
+import { Heart, MapPin, Ruler, FileText, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
@@ -78,21 +78,34 @@ export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
         <div className="font-headline-sm text-headline-sm text-primary">
           {property.price}
         </div>
+      </Link>
 
-        {property.badge === "exclusive" && salesInfo ? (
-          <div className="mt-4 flex items-center gap-3 border-t border-border-subtle pt-4">
+      {property.badge === "exclusive" && salesInfo ? (
+        <div className="border-t border-border-subtle px-5 py-4">
+          <div className="flex items-center gap-3">
             {salesInfo.avatarUrl ? (
               <img src={salesInfo.avatarUrl} alt={`Foto ${salesInfo.name}`} className="h-8 w-8 rounded-full border border-border-subtle object-cover" />
             ) : (
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-label-sm font-bold text-primary">{salesInfo.name.slice(0, 1).toUpperCase()}</div>
             )}
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-label-sm text-on-surface-variant">Hubungi:</p>
               <p className="truncate text-label-md font-medium text-on-surface">{salesInfo.name}</p>
             </div>
           </div>
-        ) : null}
-      </Link>
+          {salesInfo.phone ? (
+            <a
+              href={`https://wa.me/${salesInfo.phone.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-label-sm font-medium text-on-primary transition-colors hover:bg-primary/90"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Chat via WhatsApp
+            </a>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
