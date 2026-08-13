@@ -47,6 +47,7 @@ export interface CmsProperty {
   certificate: string;
   badge: string | null;
   imageUrl: string;
+  landType: "common" | "business_potential";
   isFavorited: boolean;
   isPublished: boolean;
   reviewStatus: string;
@@ -87,6 +88,7 @@ export interface CmsPropertyInput {
   certificate: string;
   badge: string | null;
   imageUrl: string;
+  landType: "common" | "business_potential";
   description: string | null;
   dimensions: string | null;
   zoning: string | null;
@@ -313,12 +315,13 @@ export class PostgresCmsRepository {
   }
 
   // ------------------------------------------------------------ Properties
-  async listProperties(keyword = "", status = ""): Promise<CmsProperty[]> {
+  async listProperties(keyword = "", status = "", landType?: "common" | "business_potential"): Promise<CmsProperty[]> {
     const database = getDatabase();
     const conditions = [
       keyword ? or(like(properties.title, `%${keyword}%`), like(properties.city, `%${keyword}%`), like(properties.province, `%${keyword}%`)) : undefined,
       status === "published" ? eq(properties.isPublished, true) : undefined,
       status !== "" && status !== "published" ? eq(properties.reviewStatus, status) : undefined,
+      landType ? eq(properties.landType, landType) : undefined,
     ].filter(Boolean) as SQL[];
 
     const rows = await database
@@ -379,6 +382,7 @@ export class PostgresCmsRepository {
         certificate: input.certificate,
         badge: input.badge,
         imageUrl: input.imageUrl,
+        landType: input.landType,
         isFavorited: false,
         description: input.description,
         dimensions: input.dimensions,
@@ -413,6 +417,7 @@ export class PostgresCmsRepository {
         certificate: input.certificate,
         badge: input.badge,
         imageUrl: input.imageUrl,
+        landType: input.landType,
         description: input.description,
         dimensions: input.dimensions,
         zoning: input.zoning,
@@ -918,6 +923,7 @@ function mapProperty(row: typeof properties.$inferSelect): CmsProperty {
     certificate: row.certificate,
     badge: row.badge,
     imageUrl: row.imageUrl,
+    landType: row.landType === "business_potential" ? "business_potential" : "common",
     isFavorited: row.isFavorited,
     isPublished: row.isPublished,
     reviewStatus: row.reviewStatus,

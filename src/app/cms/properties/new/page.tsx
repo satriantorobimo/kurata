@@ -29,7 +29,7 @@ export default async function CmsNewPropertyPage() {
       <div className="mt-5">
         <PageHeader eyebrow="Kurata CMS" title="Tambah aset" description="Buat listing tanah baru untuk ditayangkan di platform Kurata." />
       </div>
-      <PropertyForm mode="create" brokers={brokers} sales={sales} />
+      <PropertyForm mode="create" brokers={brokers} sales={sales} landType="common" />
     </>
   );
 }

@@ -32,7 +32,7 @@ const STATUS_CHOICES = [
   { value: "rejected", label: "Ditolak" },
 ];
 
-export function PropertyListPage({ initialData, canWrite }: { initialData: CmsProperty[]; canWrite: boolean }) {
+export function PropertyListPage({ initialData, canWrite, basePath = "/cms/properties", title = "Aset", description = "Kelola listing tanah, termasuk pengajuan dari Mitra Kurata.", createLabel = "Tambah aset" }: { initialData: CmsProperty[]; canWrite: boolean; basePath?: string; title?: string; description?: string; createLabel?: string }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
@@ -127,13 +127,13 @@ export function PropertyListPage({ initialData, canWrite }: { initialData: CmsPr
     <section>
       <PageHeader
         eyebrow="Kurata CMS"
-        title="Aset"
-        description="Kelola listing tanah, termasuk pengajuan dari Mitra Kurata."
+        title={title}
+        description={description}
         actions={
           canWrite ? (
-            <Link href="/cms/properties/new" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label-md font-label-md text-on-primary transition-colors hover:bg-primary/90">
+            <Link href={`${basePath}/new`} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label-md font-label-md text-on-primary transition-colors hover:bg-primary/90">
               <Plus className="h-4 w-4" />
-              Tambah aset
+              {createLabel}
             </Link>
           ) : null
         }
@@ -152,7 +152,7 @@ export function PropertyListPage({ initialData, canWrite }: { initialData: CmsPr
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border-subtle bg-surface-container-lowest shadow-card">
-        <DataTable columns={columns} rows={filtered} rowKey={(row) => row.id} onRowClick={(row) => router.push(`/cms/properties/${row.id}`)} emptyMessage="Tidak ada aset yang cocok." />
+        <DataTable columns={columns} rows={filtered} rowKey={(row) => row.id} onRowClick={(row) => router.push(`${basePath}/${row.id}`)} emptyMessage="Tidak ada aset yang cocok." />
       </div>
 
       <ConfirmDialog

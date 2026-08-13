@@ -7,6 +7,8 @@ import { GetRecommendedProperties } from "@/application/use-cases/GetRecommended
 import { GetStatistics } from "@/application/use-cases/GetStatistics";
 import { container } from "@/infrastructure/di/container";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const getProperties = new GetRecommendedProperties(container.propertyRepo);
   const getStats = new GetStatistics(container.statisticRepo);

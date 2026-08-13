@@ -9,6 +9,8 @@ export type PropertySort =
   | "area-asc"
   | "area-desc";
 
+export type LandType = "common" | "business_potential";
+
 export interface PropertySearchCriteria {
   query?: string;
   certificates?: CertificateType[];
@@ -20,6 +22,7 @@ export interface PropertySearchCriteria {
   sort?: PropertySort;
   page?: number;
   perPage?: number;
+  landType?: LandType;
 }
 
 export interface PropertySearchResult {
@@ -35,9 +38,9 @@ export interface PropertySearchResult {
  * Domain layer defines this — Infrastructure layer implements it.
  */
 export interface IPropertyRepository {
-  getRecommended(): Promise<Property[]>;
-  getById(id: string): Promise<PropertyDetail | null>;
-  getRelated(id: string, limit: number): Promise<Property[]>;
-  getAllIds(): Promise<string[]>;
+  getRecommended(landType?: LandType): Promise<Property[]>;
+  getById(id: string, landType?: LandType): Promise<PropertyDetail | null>;
+  getRelated(id: string, limit: number, landType?: LandType): Promise<Property[]>;
+  getAllIds(landType?: LandType): Promise<string[]>;
   search(criteria: PropertySearchCriteria): Promise<PropertySearchResult>;
 }

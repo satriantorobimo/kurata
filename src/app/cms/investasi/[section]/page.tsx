@@ -3,17 +3,18 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { GetCmsSectionDetail } from "@/application/use-cases/cms/GetCmsContent";
+import { GetCmsPropertyList } from "@/application/use-cases/cms/GetCmsProperties";
 import { GetCmsSalesOptions } from "@/application/use-cases/cms/GetCmsSales";
 import { container } from "@/infrastructure/di/container";
 import { PageHeader } from "@/presentation/components/cms/PageHeader";
 import { InvestasiSectionEditor } from "@/presentation/components/cms/investasi/InvestasiSectionEditor";
+import { PropertyListPage } from "@/presentation/components/cms/PropertyListPage";
 import { getCmsAccess } from "../../access";
 
 export const dynamic = "force-dynamic";
 
 const SLUG_TO_ID: Record<string, string> = {
   categories: "investasi-categories",
-  listings: "investasi-listings",
   features: "investasi-features",
   opportunities: "investasi-opportunities",
   "area-analysis": "investasi-area-analysis",
@@ -25,7 +26,6 @@ const SLUG_TO_ID: Record<string, string> = {
 
 const SECTION_LABELS: Record<string, string> = {
   "investasi-categories": "Kategori",
-  "investasi-listings": "Listing rekomendasi",
   "investasi-features": "Fitur unggulan",
   "investasi-opportunities": "Peluang bisnis",
   "investasi-area-analysis": "Analisis area",
@@ -38,6 +38,11 @@ const SECTION_LABELS: Record<string, string> = {
 export default async function CmsInvestasiSectionEditPage({ params }: { params: Promise<{ section: string }> }) {
   const { section: slug } = await params;
   const { canWrite } = await getCmsAccess();
+
+  if (slug === "listings") {
+    const listings = await new GetCmsPropertyList(container.cmsRepo).execute("", "", "business_potential");
+    return <PropertyListPage initialData={listings} canWrite={canWrite} basePath="/cms/investasi/listings" title="Listing Potensi Lahan" description="Kelola lahan dengan potensi bisnis. Listing ini hanya tampil di halaman Potensi Lahan." createLabel="Tambah listing potensi" />;
+  }
 
   const id = SLUG_TO_ID[slug];
   if (!id) notFound();

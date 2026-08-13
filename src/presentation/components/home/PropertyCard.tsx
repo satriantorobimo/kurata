@@ -17,20 +17,21 @@ interface SalesInfo {
 interface PropertyCardProps {
   property: PropertyDTO;
   salesInfo?: SalesInfo | null;
+  href?: string;
 }
 
 function shouldOptimizeImage(src: string): boolean {
   return src.startsWith("/") || src.startsWith("https://images.unsplash.com/");
 }
 
-export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
+export function PropertyCard({ property, salesInfo, href = `/cari-tanah/${property.id}` }: PropertyCardProps) {
   const [isFavorited, setIsFavorited] = useState(property.isFavorited);
 
   return (
     <div className="bg-surface-container-lowest rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden group border border-border-subtle/50">
       {/* Image Section */}
       <div className="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden bg-surface-container-low">
-        <Link href={`/cari-tanah/${property.id}`} aria-label={`Lihat detail ${property.title}`} className="absolute inset-0">
+        <Link href={href} aria-label={`Lihat detail ${property.title}`} className="absolute inset-0">
           <div 
             className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" 
             style={{ backgroundImage: `url('${property.imageUrl}')` }} 
@@ -71,7 +72,7 @@ export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
         
         {/* Left: Property Info */}
         <Link
-          href={`/cari-tanah/${property.id}`}
+          href={href}
           className="flex-1 min-w-0 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary flex flex-col justify-between"
         >
           <div>

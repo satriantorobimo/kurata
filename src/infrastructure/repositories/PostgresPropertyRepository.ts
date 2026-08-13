@@ -9,6 +9,7 @@ import { Property, type PropertyBadge, type CertificateType } from "../../domain
 import type { PropertyDetail } from "../../domain/entities/PropertyDetail";
 import type {
   IPropertyRepository,
+  LandType,
   PropertySearchCriteria,
   PropertySearchResult,
 } from "../../domain/repositories/IPropertyRepository";
@@ -49,7 +50,7 @@ function mapRow(row: typeof properties.$inferSelect): Property {
 
 /** Land listings from PostgreSQL, persisted in the content schema. */
 export class PostgresPropertyRepository implements IPropertyRepository {
-  async getRecommended(): Promise<Property[]> {
+  async getRecommended(landType: LandType = "common"): Promise<Property[]> {
     const rows = await getDatabase()
       .select()
       .from(properties)
@@ -57,6 +58,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
         and(
           eq(properties.isPublished, true),
           eq(properties.reviewStatus, "published"),
+          eq(properties.landType, landType),
         ),
       )
       .orderBy(desc(properties.createdAt))
@@ -93,7 +95,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     return map;
   }
 
-  async getById(id: string): Promise<PropertyDetail | null> {
+  async getById(id: string, landType: LandType = "common"): Promise<PropertyDetail | null> {
     const database = getDatabase();
     const [row, imageRows] = await Promise.all([
       database.select().from(properties).where(eq(properties.id, id)),
@@ -105,7 +107,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     ]);
 
     const property = row[0];
-    if (!property || !property.isPublished || property.reviewStatus !== "published") return null;
+    if (!property || !property.isPublished || property.reviewStatus !== "published" || property.landType !== landType) return null;
 
     let brokerName: string | null = null;
     let brokerCity: string | null = null;
@@ -183,7 +185,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     };
   }
 
-  async getRelated(id: string, limit: number): Promise<Property[]> {
+  async getRelated(id: string, limit: number, landType: LandType = "common"): Promise<Property[]> {
     const database = getDatabase();
     const [row] = await database.select().from(properties).where(eq(properties.id, id));
     if (!row) return [];
@@ -195,6 +197,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
         and(
           eq(properties.isPublished, true),
           eq(properties.reviewStatus, "published"),
+          eq(properties.landType, landType),
           sql`${properties.id} != ${id}`,
           sql`(${properties.province} = ${row.province} OR ${properties.badge} IS NOT DISTINCT FROM ${row.badge})`,
         ),
@@ -205,7 +208,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     return relatedRows.map(mapRow);
   }
 
-  async getAllIds(): Promise<string[]> {
+  async getAllIds(landType: LandType = "common"): Promise<string[]> {
     const rows = await getDatabase()
       .select({ id: properties.id })
       .from(properties)
@@ -213,6 +216,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
         and(
           eq(properties.isPublished, true),
           eq(properties.reviewStatus, "published"),
+          eq(properties.landType, landType),
         ),
       );
 
@@ -228,6 +232,7 @@ export class PostgresPropertyRepository implements IPropertyRepository {
     const conditions: SQL[] = [
       eq(properties.isPublished, true),
       eq(properties.reviewStatus, "published"),
+      eq(properties.landType, criteria.landType ?? "common"),
     ];
 
     if (query) {

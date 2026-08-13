@@ -13,13 +13,14 @@ import { PropertyFacts } from "@/presentation/components/detail/PropertyFacts";
 import { PropertyGallery } from "@/presentation/components/detail/PropertyGallery";
 import { RelatedProperties } from "@/presentation/components/detail/RelatedProperties";
 import { absoluteUrl, jsonLdScript } from "@/lib/seo";
+import type { LandType } from "@/domain/repositories/IPropertyRepository";
 
 type PageParams = Promise<{ id: string }>;
 
 export const dynamic = "force-dynamic";
 
-async function getDetail(id: string) {
-  return new GetPropertyDetail(container.propertyRepo).execute(id);
+async function getDetail(id: string, landType: LandType = "common") {
+  return new GetPropertyDetail(container.propertyRepo).execute(id, landType);
 }
 
 export async function generateMetadata({
@@ -52,14 +53,18 @@ export default async function PropertyDetailPage({
   params: PageParams;
 }) {
   const { id } = await params;
-  const property = await getDetail(id);
+  return <PropertyDetailView id={id} landType="common" catalogPath="/cari-tanah" catalogName="Cari Tanah" />;
+}
+
+export async function PropertyDetailView({ id, landType, catalogPath, catalogName }: { id: string; landType: LandType; catalogPath: string; catalogName: string }) {
+  const property = await getDetail(id, landType);
   if (!property) notFound();
 
   const auth = await getCurrentAuthContext();
   const isFavorite = auth ? await container.workspaceRepo.isFavorited(auth.userId, id) : false;
 
-  const relatedProperties = await new GetRelatedProperties(container.propertyRepo).execute(id);
-  const propertyUrl = absoluteUrl(`/cari-tanah/${id}`);
+  const relatedProperties = await new GetRelatedProperties(container.propertyRepo).execute(id, 3, landType);
+  const propertyUrl = absoluteUrl(`${catalogPath}/${id}`);
   const propertyJsonLd = {
     "@context": "https://schema.org",
     "@type": "Offer",
@@ -75,7 +80,7 @@ export default async function PropertyDetailPage({
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Beranda", item: absoluteUrl("/") },
-      { "@type": "ListItem", position: 2, name: "Cari Tanah", item: absoluteUrl("/cari-tanah") },
+      { "@type": "ListItem", position: 2, name: catalogName, item: absoluteUrl(catalogPath) },
       { "@type": "ListItem", position: 3, name: property.title, item: propertyUrl },
     ],
   };
@@ -88,7 +93,7 @@ export default async function PropertyDetailPage({
         <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-label-sm text-on-surface-variant">
           <Link href="/" className="hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Beranda</Link>
           <ChevronRight className="h-4 w-4" aria-hidden="true" />
-          <Link href="/cari-tanah" className="hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Cari Tanah</Link>
+          <Link href={catalogPath} className="hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">{catalogName}</Link>
           <ChevronRight className="h-4 w-4" aria-hidden="true" />
           <span className="max-w-48 truncate text-on-surface" aria-current="page">{property.title}</span>
         </nav>
@@ -139,7 +144,7 @@ export default async function PropertyDetailPage({
         </div>
 
         <div className="mt-14">
-          <RelatedProperties properties={relatedProperties} />
+          <RelatedProperties properties={relatedProperties} hrefForProperty={(related) => `${catalogPath}/${related.id}`} />
         </div>
       </main>
     </div>

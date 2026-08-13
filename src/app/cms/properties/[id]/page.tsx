@@ -26,7 +26,7 @@ export default async function CmsPropertyEditPage({ params }: { params: Promise<
     new GetCmsSalesOptions(container.cmsRepo).execute(),
   ]);
 
-  if (!property) notFound();
+  if (!property || property.landType !== "common") notFound();
 
   return (
     <>
@@ -37,7 +37,7 @@ export default async function CmsPropertyEditPage({ params }: { params: Promise<
       <div className="mt-5">
         <PageHeader eyebrow="Kurata CMS" title={canWrite ? "Edit aset" : "Detail aset"} description={property.title} actions={<StatusBadge value={property.isPublished ? "published" : property.reviewStatus} />} />
       </div>
-      {canWrite ? <PropertyForm mode="edit" propertyId={id} initial={property} brokers={brokers} sales={sales} /> : <ReadOnlyPropertyDetail property={property} />}
+      {canWrite ? <PropertyForm mode="edit" propertyId={id} initial={property} brokers={brokers} sales={sales} landType="common" /> : <ReadOnlyPropertyDetail property={property} />}
       <div className="mt-6">{canWrite ? <PropertyImagesManager propertyId={id} images={images} /> : <ReadOnlyImages images={images} />}</div>
     </>
   );

@@ -6,7 +6,7 @@ import { getCmsAccess } from "../access";
 export const dynamic = "force-dynamic";
 
 export default async function CmsPropertiesPage() {
-  const [{ canWrite }, properties] = await Promise.all([getCmsAccess(), new GetCmsPropertyList(container.cmsRepo).execute()]);
+  const [{ canWrite }, properties] = await Promise.all([getCmsAccess(), new GetCmsPropertyList(container.cmsRepo).execute("", "", "common")]);
 
   return <PropertyListPage initialData={properties} canWrite={canWrite} />;
 }

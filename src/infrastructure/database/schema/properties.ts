@@ -14,6 +14,7 @@ export const properties = content.table("properties", {
   certificate: varchar("certificate", { length: 10 }).notNull(),
   badge: varchar("badge", { length: 20 }),
   imageUrl: text("image_url").notNull(),
+  landType: varchar("land_type", { length: 30 }).notNull().default("common"),
   isFavorited: boolean("is_favorited").notNull().default(false),
   description: text("description"),
   dimensions: varchar("dimensions", { length: 100 }),
@@ -37,6 +38,7 @@ export const properties = content.table("properties", {
   index("properties_price_index").on(table.priceAmount),
   index("properties_area_index").on(table.areaSqm),
   index("properties_location_index").on(table.province, table.city),
+  index("properties_land_type_published_index").on(table.landType, table.isPublished),
   index("properties_listed_by_index").on(table.listedBy),
   index("properties_sales_id_index").on(table.salesId),
 ]);

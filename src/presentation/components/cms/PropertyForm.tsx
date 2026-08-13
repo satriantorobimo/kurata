@@ -30,6 +30,7 @@ interface PropertyFormProps {
   initial?: CmsPropertyDetail;
   brokers: CmsBrokerOption[];
   sales: CmsSalesOption[];
+  landType: "common" | "business_potential";
 }
 
 function parseFacilities(value: string): string[] {
@@ -43,7 +44,7 @@ function joinFacilities(value: string[] | null | undefined): string {
   return (value ?? []).join(", ");
 }
 
-export function PropertyForm({ mode, propertyId, initial, brokers, sales }: PropertyFormProps) {
+export function PropertyForm({ mode, propertyId, initial, brokers, sales, landType }: PropertyFormProps) {
   const router = useRouter();
   const [notice, setNotice] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -60,6 +61,7 @@ export function PropertyForm({ mode, propertyId, initial, brokers, sales }: Prop
       certificate: String(formData.get("certificate") ?? "SHM"),
       badge: String(formData.get("badge") ?? "") === "" ? null : String(formData.get("badge")),
       imageUrl: String(formData.get("imageUrl") ?? "").trim(),
+      landType,
       description: String(formData.get("description") ?? "").trim() || null,
       dimensions: String(formData.get("dimensions") ?? "").trim() || null,
       zoning: String(formData.get("zoning") ?? "").trim() || null,

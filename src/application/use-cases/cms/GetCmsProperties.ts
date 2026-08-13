@@ -1,13 +1,14 @@
 import type { CmsBrokerOption, CmsProperty, CmsPropertyDetail, CmsPropertyImage } from "../../../infrastructure/repositories/PostgresCmsRepository";
+import type { LandType } from "@/domain/repositories/IPropertyRepository";
 
 /**
  * Use case: read property listings for the CMS.
  */
 export class GetCmsPropertyList {
-  constructor(private readonly repository: { listProperties(keyword: string, status: string): Promise<CmsProperty[]> }) {}
+  constructor(private readonly repository: { listProperties(keyword: string, status: string, landType?: LandType): Promise<CmsProperty[]> }) {}
 
-  execute(keyword = "", status = ""): Promise<CmsProperty[]> {
-    return this.repository.listProperties(keyword, status);
+  execute(keyword = "", status = "", landType?: LandType): Promise<CmsProperty[]> {
+    return this.repository.listProperties(keyword, status, landType);
   }
 }
 

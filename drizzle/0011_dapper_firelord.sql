@@ -1,0 +1,2 @@
+ALTER TABLE "content"."properties" ADD COLUMN "land_type" varchar(30) DEFAULT 'common' NOT NULL;--> statement-breakpoint
+CREATE INDEX "properties_land_type_published_index" ON "content"."properties" USING btree ("land_type","is_published");

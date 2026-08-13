@@ -8,6 +8,17 @@ import { hashPassword } from "@/infrastructure/auth/password-hasher";
 import { requireRole } from "@/infrastructure/security/authorization-dal";
 import { container } from "@/infrastructure/di/container";
 import { logAudit } from "@/infrastructure/audit/log";
+import {
+  INVESTASI_AREA_ANALYSIS,
+  INVESTASI_BROKER,
+  INVESTASI_CATEGORIES,
+  INVESTASI_FEATURES,
+  INVESTASI_INFRASTRUCTURE,
+  INVESTASI_LISTINGS,
+  INVESTASI_OPPORTUNITIES,
+  INVESTASI_SCORE_METRICS,
+  INVESTASI_SIMILAR,
+} from "@/infrastructure/data/investasi-content-seed";
 import type {
   AccountStatus,
   CmsBlogInput,
@@ -50,6 +61,8 @@ export async function createPropertyAction(input: Omit<CmsPropertyInput, "id">):
     const id = randomUUID();
     await container.cmsRepo.createProperty({ ...input, id });
     revalidatePath("/cms/properties");
+    revalidatePath("/cms/investasi/listings");
+    revalidatePath("/investasi");
     logAudit({ actorUserId: actor.userId, eventType: "property.create", entityType: "property", entityId: id });
     return { ok: true, message: "Aset berhasil dibuat." };
   } catch {
@@ -64,9 +77,15 @@ export async function updatePropertyAction(id: string, input: Omit<CmsPropertyIn
     const errors = validatePropertyInput(input);
     if (Object.keys(errors).length > 0) return { ok: false, message: "Periksa kembali data aset.", fieldErrors: errors };
 
+    const existing = await container.cmsRepo.getPropertyById(id);
+    if (!existing || existing.landType !== input.landType) return fail("Listing tidak ditemukan pada katalog ini.");
+
     await container.cmsRepo.updateProperty(id, input);
     revalidatePath("/cms/properties");
     revalidatePath("/cms/properties/[id]", "page");
+    revalidatePath("/cms/investasi/listings");
+    revalidatePath("/cms/investasi/listings/[id]", "page");
+    revalidatePath("/investasi");
     logAudit({ actorUserId: actor.userId, eventType: "property.update", entityType: "property", entityId: id });
     return { ok: true, message: "Aset berhasil diperbarui." };
   } catch {
@@ -218,6 +237,46 @@ export async function deleteContentSectionAction(id: string): Promise<CmsActionR
     return { ok: true, message: "Segmen konten berhasil dihapus." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
+  }
+}
+
+const INVESTASI_SECTION_DEFAULTS: Record<string, { content: unknown; position: number }> = {
+  "investasi-categories": { content: INVESTASI_CATEGORIES, position: 0 },
+  "investasi-listings": { content: INVESTASI_LISTINGS, position: 1 },
+  "investasi-features": { content: INVESTASI_FEATURES, position: 2 },
+  "investasi-opportunities": { content: INVESTASI_OPPORTUNITIES, position: 3 },
+  "investasi-area-analysis": { content: INVESTASI_AREA_ANALYSIS, position: 4 },
+  "investasi-infrastructure": { content: INVESTASI_INFRASTRUCTURE, position: 5 },
+  "investasi-similar": { content: INVESTASI_SIMILAR, position: 6 },
+  "investasi-score-metrics": { content: INVESTASI_SCORE_METRICS, position: 7 },
+  "investasi-broker": { content: INVESTASI_BROKER, position: 8 },
+};
+
+/** Creates one missing Potensi Lahan section without altering any existing CMS data. */
+export async function initializeInvestasiSectionAction(id: string): Promise<CmsActionResult> {
+  try {
+    const actor = await requireSuperAdmin();
+    const fallback = INVESTASI_SECTION_DEFAULTS[id];
+    if (!fallback) return fail("Segmen Potensi Lahan tidak dikenali.");
+
+    const existing = await container.cmsRepo.getContentSection(id);
+    if (!existing) {
+      await container.cmsRepo.createContentSection({
+        id,
+        section: "investasi",
+        content: fallback.content,
+        position: fallback.position,
+        isPublished: true,
+      });
+      logAudit({ actorUserId: actor.userId, eventType: "content_section.initialize", entityType: "content_section", entityId: id });
+    }
+
+    revalidatePath("/cms/investasi");
+    revalidatePath(`/cms/investasi/${id.replace("investasi-", "")}`);
+    revalidatePath("/investasi");
+    return { ok: true, message: "Segmen berhasil disiapkan." };
+  } catch {
+    return fail("Operasi gagal. Coba lagi.");
   }
 }
 
@@ -445,6 +504,7 @@ function validatePropertyInput(input: Omit<CmsPropertyInput, "id">) {
   if (!["SHM", "HGB", "HGU", "HP"].includes(input.certificate)) errors.certificate = "Jenis sertifikat tidak valid.";
   if (!input.imageUrl.trim()) errors.imageUrl = "URL gambar utama wajib diisi.";
   if (input.badge !== null && input.badge !== undefined && !["exclusive", "broker"].includes(input.badge)) errors.badge = "Badge tidak valid.";
+  if (input.landType !== "common" && input.landType !== "business_potential") errors.landType = "Jenis lahan tidak valid.";
   return errors;
 }
 

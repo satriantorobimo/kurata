@@ -33,6 +33,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { GetInvestasiContent, type InvestasiBroker } from "@/application/use-cases/GetInvestasiContent";
+import { SearchProperties } from "@/application/use-cases/SearchProperties";
 import { container } from "@/infrastructure/di/container";
 
 export const metadata: Metadata = {
@@ -40,6 +41,8 @@ export const metadata: Metadata = {
   description: "Analisis potensi lahan terbaik di setiap bidang tanah — aksesibilitas, lalu lintas, dan peluang bisnis dalam satu halaman bersama Kurata.",
   openGraph: { title: "Potensi Lahan | Kurata", description: "Temukan potensi terbaik di setiap bidang lahan bersama Kurata." },
 };
+
+export const dynamic = "force-dynamic";
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   Factory, Fuel, Warehouse, Building2, Store, Building, UtensilsCrossed, Sprout, Home, TreePalm,
@@ -69,7 +72,10 @@ function StarRating({ rating, size = "h-5 w-5" }: { rating: number; size?: strin
 }
 
 export default async function InvestmentPage() {
-  const content = await new GetInvestasiContent(container.contentSectionRepo).execute();
+  const [content, listingResult] = await Promise.all([
+    new GetInvestasiContent(container.contentSectionRepo).execute(),
+    new SearchProperties(container.propertyRepo).execute({ landType: "business_potential", sort: "recommended", page: 1, perPage: 12 }),
+  ]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -138,8 +144,8 @@ export default async function InvestmentPage() {
             <section aria-labelledby="listing-title">
               <SectionHeading eyebrow="Rekomendasi untuk Anda" title="Lahan Potensial untuk SPBU" id="listing-title" />
               <div className="mt-8 flex gap-4 overflow-x-auto pb-2 snap-x">
-                {content.listings.map((listing) => (
-                  <article key={listing.title} className="group w-72 shrink-0 snap-start overflow-hidden rounded-xl border border-border-subtle bg-surface-container-lowest shadow-card transition-shadow hover:shadow-card-hover">
+                {listingResult.properties.map((listing) => (
+                  <article key={listing.id} className="group w-72 shrink-0 snap-start overflow-hidden rounded-xl border border-border-subtle bg-surface-container-lowest shadow-card transition-shadow hover:shadow-card-hover">
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <div className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${listing.imageUrl}')` }} role="img" aria-label={listing.title} />
                       <span className="absolute left-3 top-3 rounded-full bg-primary px-2.5 py-1 text-label-sm font-label-sm text-on-primary shadow-sm">Potensi Tinggi</span>
@@ -155,7 +161,7 @@ export default async function InvestmentPage() {
                         {listing.area}
                       </p>
                       <p className="mt-2 font-headline-sm text-headline-sm text-primary">{listing.price} <span className="font-body-md text-on-surface-variant">/ m²</span></p>
-                      <Link href="/cari-tanah" className="mt-3 inline-flex w-full items-center justify-center gap-1 rounded-lg bg-primary px-4 py-2.5 text-label-md font-label-md text-on-primary transition-colors hover:bg-primary/90">
+                      <Link href={`/investasi/${listing.id}`} className="mt-3 inline-flex w-full items-center justify-center gap-1 rounded-lg bg-primary px-4 py-2.5 text-label-md font-label-md text-on-primary transition-colors hover:bg-primary/90">
                         Lihat Detail
                         <ArrowRight className="h-4 w-4" aria-hidden="true" />
                       </Link>

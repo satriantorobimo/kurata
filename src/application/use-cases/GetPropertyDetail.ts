@@ -1,12 +1,13 @@
 import { IPropertyRepository } from "../../domain/repositories/IPropertyRepository";
 import { PropertyDetailDTO } from "../dto/PropertyDetailDTO";
 import { mapPropertyToDTO } from "../mappers/PropertyMapper";
+import type { LandType } from "../../domain/repositories/IPropertyRepository";
 
 export class GetPropertyDetail {
   constructor(private readonly propertyRepository: IPropertyRepository) {}
 
-  async execute(id: string): Promise<PropertyDetailDTO | null> {
-    const detail = await this.propertyRepository.getById(id);
+  async execute(id: string, landType: LandType = "common"): Promise<PropertyDetailDTO | null> {
+    const detail = await this.propertyRepository.getById(id, landType);
     if (!detail) return null;
 
     return {
