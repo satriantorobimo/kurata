@@ -48,7 +48,7 @@ export function HeroSection() {
   }
 
   return (
-    <section className="relative w-full min-h-100 pt-16 md:min-h-150 md:pt-20 flex items-center overflow-hidden bg-surface-container-lowest">
+    <section className="relative flex min-h-100 w-full items-center overflow-hidden bg-surface-container-lowest md:min-h-150">
       {/* Background Image */}
       <div className="absolute inset-0 z-0" aria-hidden="true">
         <div

@@ -19,7 +19,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex w-full flex-col bg-background pt-16 md:pt-20">
       <HeroSection />
       <HighlightCards />
       <StatisticsBar stats={stats} />
