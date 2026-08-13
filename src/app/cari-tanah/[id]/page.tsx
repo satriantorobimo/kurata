@@ -14,6 +14,8 @@ import { PropertyGallery } from "@/presentation/components/detail/PropertyGaller
 import { RelatedProperties } from "@/presentation/components/detail/RelatedProperties";
 import { absoluteUrl, jsonLdScript } from "@/lib/seo";
 import type { LandType } from "@/domain/repositories/IPropertyRepository";
+import { GetInvestasiContent } from "@/application/use-cases/GetInvestasiContent";
+import { InvestmentAnalysis } from "@/presentation/components/investasi/InvestmentAnalysis";
 
 type PageParams = Promise<{ id: string }>;
 
@@ -64,6 +66,7 @@ export async function PropertyDetailView({ id, landType, catalogPath, catalogNam
   const isFavorite = auth ? await container.workspaceRepo.isFavorited(auth.userId, id) : false;
 
   const relatedProperties = await new GetRelatedProperties(container.propertyRepo).execute(id, 3, landType);
+  const investmentContent = landType === "business_potential" ? await new GetInvestasiContent(container.contentSectionRepo).execute() : null;
   const propertyUrl = absoluteUrl(`${catalogPath}/${id}`);
   const propertyJsonLd = {
     "@context": "https://schema.org",
@@ -137,6 +140,8 @@ export async function PropertyDetailView({ id, landType, catalogPath, catalogNam
                   {property.facilities.map((facility) => <li key={facility} className="flex items-center gap-2 text-body-md text-on-surface-variant"><ShieldCheck className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />{facility}</li>)}
                 </ul>
               </section>
+
+              {investmentContent ? <InvestmentAnalysis content={investmentContent} title={property.title} /> : null}
             </div>
           </div>
 
