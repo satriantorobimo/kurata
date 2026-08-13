@@ -1,6 +1,12 @@
-/* eslint-disable @next/next/no-img-element */
 import { MessageCircle, ShieldCheck } from "lucide-react";
+import Image from "next/image";
+
 import type { PropertyDetailDTO } from "@/application/dto/PropertyDetailDTO";
+import { Button, ButtonLink } from "@/presentation/components/shared/Button";
+
+function shouldOptimizeImage(src: string): boolean {
+  return src.startsWith("/") || src.startsWith("https://images.unsplash.com/");
+}
 
 export function PropertyContactPanel({ property }: { property: PropertyDetailDTO }) {
   return (
@@ -34,7 +40,7 @@ function BrokerSection({ name, city, phone, avatarKey }: { name: string; city: s
       <p className="text-label-sm font-medium text-on-surface-variant">Tanya Mitra Kurata</p>
       <div className="mt-3 flex items-center gap-3">
         {avatarKey ? (
-          <img src={avatarKey} alt={`Foto ${name}`} className="h-10 w-10 rounded-full border border-border-subtle object-cover" />
+          <Image src={avatarKey} alt={`Foto ${name}`} width={40} height={40} unoptimized={!shouldOptimizeImage(avatarKey)} className="h-10 w-10 rounded-full border border-border-subtle object-cover" />
         ) : (
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-label-sm font-bold text-primary">{initial}</div>
         )}
@@ -44,10 +50,10 @@ function BrokerSection({ name, city, phone, avatarKey }: { name: string; city: s
         </div>
       </div>
       {phone ? (
-        <a href={`https://wa.me/${phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label-md font-label-md text-on-primary transition-colors hover:bg-primary/90">
+        <ButtonLink href={`https://wa.me/${phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="mt-4 w-full px-4 py-2.5">
           <MessageCircle className="h-4 w-4" />
           Hubungi via WhatsApp
-        </a>
+        </ButtonLink>
       ) : null}
     </>
   );
@@ -60,10 +66,10 @@ function FallbackSection({ label }: { label: string }) {
         <p className="text-label-md font-label-md text-on-surface">{label}</p>
         <p className="mt-1 text-label-sm text-on-surface-variant">Dapatkan informasi, ketersediaan, dan jadwal survei properti.</p>
       </div>
-      <button type="button" disabled className="mt-3 inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label-md font-label-md text-on-primary opacity-55">
+      <Button type="button" disabled className="mt-3 w-full px-4 py-2.5">
         <MessageCircle className="h-4 w-4" />
         Hubungi {label}
-      </button>
+      </Button>
     </>
   );
 }
@@ -76,7 +82,7 @@ function SalesSection({ name, phone, avatarUrl }: { name: string; phone: string 
       <p className="text-label-sm font-medium text-on-surface-variant">Hubungi:</p>
       <div className="mt-3 flex items-center gap-3">
         {avatarUrl ? (
-          <img src={avatarUrl} alt={`Foto ${name}`} className="h-10 w-10 rounded-full border border-border-subtle object-cover" />
+          <Image src={avatarUrl} alt={`Foto ${name}`} width={40} height={40} unoptimized={!shouldOptimizeImage(avatarUrl)} className="h-10 w-10 rounded-full border border-border-subtle object-cover" />
         ) : (
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-label-sm font-bold text-primary">{initial}</div>
         )}
@@ -86,10 +92,10 @@ function SalesSection({ name, phone, avatarUrl }: { name: string; phone: string 
         </div>
       </div>
       {phone ? (
-        <a href={`https://wa.me/${phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label-md font-label-md text-on-primary transition-colors hover:bg-primary/90">
+        <ButtonLink href={`https://wa.me/${phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="mt-4 w-full px-4 py-2.5">
           <MessageCircle className="h-4 w-4" />
           Chat via WhatsApp
-        </a>
+        </ButtonLink>
       ) : null}
     </>
   );

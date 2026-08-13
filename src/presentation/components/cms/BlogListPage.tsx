@@ -61,7 +61,7 @@ export function BlogListPage({ initialData, canWrite }: { initialData: CmsBlogLi
       render: (row) => (
         <div className="flex flex-wrap gap-1.5">
           <StatusBadge value={row.isPublished ? "published" : "draft"} />
-          {row.isFeatured ? <StatusBadge value="true" label="Unggulan" className="bg-violet-100 text-violet-800" /> : null}
+          {row.isFeatured ? <StatusBadge value="true" label="Unggulan" className="bg-tertiary-container text-on-tertiary-container" /> : null}
         </div>
       ),
     },

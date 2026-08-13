@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { type NextRequest, NextResponse } from "next/server";
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR ?? join(process.cwd(), "public", "uploads");
+const UPLOAD_DIR = process.env.UPLOAD_DIR ?? join(/*turbopackIgnore: true*/ process.cwd(), "public", "uploads");
 
 const EXT_TO_MIME: Record<string, string> = {
   ".jpg": "image/jpeg",

@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { PublicChrome } from "@/presentation/components/layout/PublicChrome";
 import { absoluteUrl, jsonLdScript, siteName, siteUrl } from "@/lib/seo";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
@@ -40,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${inter.variable} h-full antialiased`}>
+    <html lang="id" className="h-full antialiased">
       <body className="min-h-full flex flex-col font-sans">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript({ "@context": "https://schema.org", "@type": "Organization", name: siteName, url: absoluteUrl("/"), logo: absoluteUrl("/logo.png") }) }} />
         <PublicChrome>{children}</PublicChrome>

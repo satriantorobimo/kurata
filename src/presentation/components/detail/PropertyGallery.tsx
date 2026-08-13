@@ -2,11 +2,18 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import Image from "next/image";
+
 import { cn } from "@/lib/cn";
+import { IconButton } from "@/presentation/components/shared/Button";
 
 interface PropertyGalleryProps {
   title: string;
   imageUrls: string[];
+}
+
+function shouldOptimizeImage(src: string): boolean {
+  return src.startsWith("/") || src.startsWith("https://images.unsplash.com/");
 }
 
 export function PropertyGallery({ title, imageUrls }: PropertyGalleryProps) {
@@ -52,9 +59,12 @@ export function PropertyGallery({ title, imageUrls }: PropertyGalleryProps) {
           onClick={() => open(0)}
           className="group relative min-h-72 overflow-hidden rounded-xl bg-surface-container-low md:row-span-2 md:min-h-[31rem]"
         >
-          <img
+          <Image
             src={gridImages[0]}
             alt={title}
+            fill
+            sizes="(min-width: 768px) 50vw, 100vw"
+            unoptimized={!shouldOptimizeImage(gridImages[0])}
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </button>
@@ -70,9 +80,12 @@ export function PropertyGallery({ title, imageUrls }: PropertyGalleryProps) {
               onClick={() => open(imageIndex)}
               className="group relative min-h-44 overflow-hidden rounded-xl bg-surface-container-low md:min-h-0"
             >
-              <img
+              <Image
                 src={image}
                 alt={`${title}, foto ${imageIndex + 1}`}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                unoptimized={!shouldOptimizeImage(image)}
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
               {showOverlay && (
@@ -99,45 +112,47 @@ export function PropertyGallery({ title, imageUrls }: PropertyGalleryProps) {
             <span className="text-body-sm text-white/80">
               {selected + 1} / {allImages.length}
             </span>
-            <button
-              type="button"
+            <IconButton
               onClick={close}
               className="rounded-lg p-2 transition-colors hover:bg-white/10"
-              aria-label="Tutup"
+              label="Tutup"
             >
               <X className="h-5 w-5" />
-            </button>
+            </IconButton>
           </div>
 
           <div className="flex flex-1 items-center justify-center px-4">
             {allImages.length > 1 && (
-              <button
-                type="button"
+              <IconButton
                 onClick={goPrev}
                 className="mr-2 shrink-0 rounded-full p-2 text-white transition-colors hover:bg-white/10 md:mr-4"
-                aria-label="Sebelumnya"
+                label="Sebelumnya"
+                size="lg"
               >
                 <ChevronLeft className="h-7 w-7" />
-              </button>
+              </IconButton>
             )}
 
             <div className="flex max-h-[75vh] max-w-[85vw] items-center justify-center">
-              <img
+              <Image
                 src={allImages[selected]}
                 alt={`${title}, foto ${selected + 1}`}
+                width={1600}
+                height={1200}
+                unoptimized={!shouldOptimizeImage(allImages[selected])}
                 className="max-h-[75vh] max-w-full rounded-lg object-contain"
               />
             </div>
 
             {allImages.length > 1 && (
-              <button
-                type="button"
+              <IconButton
                 onClick={goNext}
                 className="ml-2 shrink-0 rounded-full p-2 text-white transition-colors hover:bg-white/10 md:ml-4"
-                aria-label="Selanjutnya"
+                label="Selanjutnya"
+                size="lg"
               >
                 <ChevronRight className="h-7 w-7" />
-              </button>
+              </IconButton>
             )}
           </div>
 
@@ -149,13 +164,16 @@ export function PropertyGallery({ title, imageUrls }: PropertyGalleryProps) {
                   type="button"
                   onClick={() => setSelected(i)}
                   className={cn(
-                    "h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 transition-colors",
+                    "relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 transition-colors",
                     i === selected ? "border-white" : "border-transparent opacity-60 hover:opacity-100",
                   )}
                 >
-                  <img
+                  <Image
                     src={image}
                     alt={`${title}, foto ${i + 1}`}
+                    fill
+                    sizes="56px"
+                    unoptimized={!shouldOptimizeImage(image)}
                     className="h-full w-full object-cover"
                   />
                 </button>

@@ -5,6 +5,7 @@ import { CheckCircle2, LoaderCircle, ShieldCheck } from "lucide-react";
 import { INITIAL_INVESTMENT_INQUIRY_STATE } from "@/application/dto/InvestmentInquiryDTO";
 import { INVESTMENT_HORIZONS, INVESTMENT_OBJECTIVES, INVESTMENT_PROPERTY_PREFERENCES } from "@/domain/entities/InvestmentInquiry";
 import { submitInvestmentInquiry } from "@/app/investasi/actions";
+import { SelectInput, TextInput } from "@/presentation/components/shared/FormField";
 
 const OBJECTIVE_LABELS = { "capital-appreciation": "Potensi kenaikan nilai", development: "Pengembangan properti", "land-banking": "Simpan aset tanah", diversification: "Diversifikasi aset" };
 const HORIZON_LABELS = { "less-than-1-year": "Kurang dari 1 tahun", "1-to-3-years": "1–3 tahun", "3-to-5-years": "3–5 tahun", "more-than-5-years": "Lebih dari 5 tahun" };
@@ -26,6 +27,6 @@ export function InvestmentInquiryForm() {
   </form>;
 }
 
-function TextField({ id, name, label, type = "text", error, ...props }: { id: string; name: string; label: string; type?: string; error?: string } & InputHTMLAttributes<HTMLInputElement>) { return <div><label htmlFor={id} className="text-label-md font-label-md text-on-surface">{label} {props.required && <span className="text-error">*</span>}</label><input id={id} name={name} type={type} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} className="mt-2 w-full rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface outline-none placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/20 aria-[invalid=true]:border-error" {...props} />{error && <p id={`${id}-error`} className="mt-1.5 text-label-sm text-error" role="alert">{error}</p>}</div>; }
+function TextField({ id, name, label, type = "text", error, ...props }: { id: string; name: string; label: string; type?: string; error?: string } & InputHTMLAttributes<HTMLInputElement>) { return <TextInput id={id} name={name} label={label} type={type} error={error} {...props} />; }
 
-function SelectField({ id, name, label, options, error, required }: { id: string; name: string; label: string; options: { value: string; label: string }[]; error?: string; required?: boolean }) { return <div><label htmlFor={id} className="text-label-md font-label-md text-on-surface">{label} {required && <span className="text-error">*</span>}</label><select id={id} name={name} required={required} defaultValue="" aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} className="mt-2 w-full rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 aria-[invalid=true]:border-error"><option value="" disabled>Pilih salah satu</option>{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>{error && <p id={`${id}-error`} className="mt-1.5 text-label-sm text-error" role="alert">{error}</p>}</div>; }
+function SelectField({ id, name, label, options, error, required }: { id: string; name: string; label: string; options: { value: string; label: string }[]; error?: string; required?: boolean }) { return <SelectInput id={id} name={name} label={label} options={options} error={error} required={required} />; }

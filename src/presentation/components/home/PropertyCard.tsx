@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Heart, MapPin, Ruler, FileText, MessageCircle, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { Badge } from "@/presentation/components/shared/Badge";
@@ -17,6 +17,10 @@ interface SalesInfo {
 interface PropertyCardProps {
   property: PropertyDTO;
   salesInfo?: SalesInfo | null;
+}
+
+function shouldOptimizeImage(src: string): boolean {
+  return src.startsWith("/") || src.startsWith("https://images.unsplash.com/");
 }
 
 export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
@@ -52,11 +56,11 @@ export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
           )}
           aria-label={isFavorited ? "Hapus dari favorit" : "Simpan ke favorit"}
         >
-          <Heart className="w-[18px] h-[18px]" fill={isFavorited ? "currentColor" : "none"} />
+          <Heart className="h-icon-md w-icon-md" fill={isFavorited ? "currentColor" : "none"} />
         </button>
 
         {/* Bottom Left Area Overlay */}
-        <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-lg bg-[#144834]/95 px-3 py-1.5 text-white backdrop-blur shadow-sm">
+        <div className="pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-lg bg-primary-strong/95 px-3 py-1.5 text-white backdrop-blur shadow-sm">
           <Ruler className="w-4 h-4" />
           <span className="text-sm font-semibold">{property.area}</span>
         </div>
@@ -76,17 +80,17 @@ export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
             </h3>
             
             <div className="flex items-start gap-1.5 text-sm text-on-surface-variant mb-3">
-              <MapPin className="w-[16px] h-[16px] shrink-0 mt-0.5" />
+              <MapPin className="mt-0.5 h-icon-sm w-icon-sm shrink-0" />
               <span className="line-clamp-2">{property.location}</span>
             </div>
             
             <div className="flex flex-col gap-2.5 text-sm text-on-surface-variant mb-4">
               <div className="flex items-center gap-1.5">
-                <FileText className="w-[16px] h-[16px]" />
+                <FileText className="h-icon-sm w-icon-sm" />
                 <span className="font-medium">{property.certificate}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <MapPin className="w-[16px] h-[16px]" />
+                <MapPin className="h-icon-sm w-icon-sm" />
                 <span className="font-medium">Lokasi Strategis</span>
               </div>
             </div>
@@ -99,18 +103,18 @@ export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
 
         {/* Right: Agent Contact Card - Dikecilkan width & heightnya */}
         {property.badge === "exclusive" && salesInfo ? (
-          <div className="w-full sm:w-[190px] shrink-0 rounded-2xl bg-[#F0F5F2] p-3 flex flex-col gap-2.5 border border-[#E2ECE6] h-fit self-start">
+          <div className="flex h-fit w-full shrink-0 flex-col gap-2.5 self-start rounded-2xl border border-border-agent bg-surface-agent p-3 sm:w-[190px]">
             <div className="flex items-center gap-2">
               <div className="relative shrink-0">
                 {salesInfo.avatarUrl ? (
-                  <img src={salesInfo.avatarUrl} alt={`Foto ${salesInfo.name}`} className="h-[50px] w-[50px] shrink-0 rounded-full object-cover border-[1.5px] border-white shadow-sm" />
+                  <Image src={salesInfo.avatarUrl} alt={`Foto ${salesInfo.name}`} width={50} height={50} unoptimized={!shouldOptimizeImage(salesInfo.avatarUrl)} className="h-avatar-md w-avatar-md shrink-0 rounded-full border-[1.5px] border-white object-cover shadow-sm" />
                 ) : (
-                  <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-[#144834]/10 text-xs font-bold text-[#144834] border-[1.5px] border-white shadow-sm">
+                  <div className="flex h-avatar-md w-avatar-md shrink-0 items-center justify-center rounded-full border-[1.5px] border-white bg-primary-strong/10 text-xs font-bold text-primary-strong shadow-sm">
                     {salesInfo.name.slice(0, 1).toUpperCase()}
                   </div>
                 )}
                 {/* Verified Badge Icon */}
-                <div className="absolute -bottom-0.5 -right-0.5 bg-[#144834] rounded-full p-[1px] border-[1.5px] border-white">
+                <div className="absolute -bottom-0.5 -right-0.5 rounded-full border-[1.5px] border-white bg-primary-strong p-[1px]">
                   <CheckCircle2 className="w-2.5 h-2.5 text-white" strokeWidth={3} />
                 </div>
               </div>
@@ -126,9 +130,9 @@ export function PropertyCard({ property, salesInfo }: PropertyCardProps) {
                 href={`https://wa.me/${salesInfo.phone.replace(/\D/g, "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#144834] px-3 py-2 text-[11px] font-semibold text-white transition-colors hover:bg-[#0e3325] shadow-sm"
+                className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-primary-strong px-3 py-2 text-[11px] font-semibold text-white shadow-sm transition-colors hover:bg-primary-strong-hover"
               >
-                <MessageCircle className="h-[14px] w-[14px]" />
+                <MessageCircle className="h-icon-xs w-icon-xs" />
                 Chat via WhatsApp
               </a>
             ) : null}

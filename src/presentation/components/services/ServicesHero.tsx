@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowDown, CheckCircle2, Compass } from "lucide-react";
+import { ButtonLink } from "@/presentation/components/shared/Button";
 
 const HIGHLIGHTS = ["Kebutuhan lebih terpetakan", "Langkah awal lebih jelas", "Dukungan sesuai konteks"];
 
@@ -16,8 +16,8 @@ export function ServicesHero() {
             {HIGHLIGHTS.map((highlight) => <li key={highlight} className="flex items-center gap-2 text-label-sm font-label-sm text-on-surface"><CheckCircle2 className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />{highlight}</li>)}
           </ul>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="#konsultasi" className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-label-md font-label-md text-on-primary transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Konsultasi Kebutuhan<ArrowDown className="h-4 w-4" aria-hidden="true" /></Link>
-            <Link href="#layanan" className="inline-flex items-center justify-center rounded-lg border border-primary px-6 py-3 text-label-md font-label-md text-primary transition-colors hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Eksplor Layanan</Link>
+            <ButtonLink href="#konsultasi" className="px-6 py-3">Konsultasi Kebutuhan<ArrowDown className="h-4 w-4" aria-hidden="true" /></ButtonLink>
+            <ButtonLink href="#layanan" variant="outline" className="px-6 py-3">Eksplor Layanan</ButtonLink>
           </div>
         </div>
 

@@ -6,7 +6,6 @@ import { StatusPill } from "@/presentation/components/workspace/StatusPill";
 import { GetUserWorkspace } from "@/application/use-cases/GetUserWorkspace";
 import { container } from "@/infrastructure/di/container";
 import { getCurrentAuthContext } from "@/infrastructure/security/authorization-dal";
-import type { WorkspaceStatus } from "@/application/config/workspaceDemoData";
 
 export default async function UserDashboardPage() {
   const auth = await getCurrentAuthContext();

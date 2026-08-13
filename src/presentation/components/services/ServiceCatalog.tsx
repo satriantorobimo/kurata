@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ChartNoAxesCombined, FileSearch, Handshake, ListFilter, Megaphone, SearchCheck } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { ServiceDefinition } from "@/application/config/serviceCatalog";
+import { ButtonLink } from "@/presentation/components/shared/Button";
 
 const ICONS: Record<ServiceDefinition["id"], LucideIcon> = {
   "property-search": SearchCheck,
@@ -15,7 +16,7 @@ const ICONS: Record<ServiceDefinition["id"], LucideIcon> = {
 export function ServiceCatalog({ services }: { services: ServiceDefinition[] }) {
   return (
     <section id="layanan" className="container-main scroll-mt-24 py-16 md:py-24" aria-labelledby="service-catalog-title">
-      <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div className="max-w-2xl"><p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">Pilihan layanan</p><h2 id="service-catalog-title" className="mt-2 text-3xl font-bold tracking-tight text-on-surface">Dukungan untuk Setiap Titik Awal</h2><p className="mt-3 text-body-md leading-7 text-on-surface-variant">Pilih kebutuhan yang paling mendekati situasi Anda. Kami bantu memetakan langkah berikutnya.</p></div><Link href="#konsultasi" className="inline-flex items-center gap-1 text-label-md font-label-md text-primary hover:underline">Belum yakin memilih? Konsultasikan<ArrowRight className="h-4 w-4" aria-hidden="true" /></Link></div>
+      <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div className="max-w-2xl"><p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">Pilihan layanan</p><h2 id="service-catalog-title" className="mt-2 text-3xl font-bold tracking-tight text-on-surface">Dukungan untuk Setiap Titik Awal</h2><p className="mt-3 text-body-md leading-7 text-on-surface-variant">Pilih kebutuhan yang paling mendekati situasi Anda. Kami bantu memetakan langkah berikutnya.</p></div><ButtonLink href="#konsultasi" variant="ghost" size="sm">Belum yakin memilih? Konsultasikan<ArrowRight className="h-4 w-4" aria-hidden="true" /></ButtonLink></div>
       <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {services.map((service, index) => {
           const Icon = ICONS[service.id];

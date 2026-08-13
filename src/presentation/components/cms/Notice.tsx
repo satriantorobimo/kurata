@@ -14,7 +14,7 @@ interface NoticeProps {
 
 const toneClasses: Record<NoticeTone, string> = {
   info: "border-primary/20 bg-primary/5 text-on-surface",
-  success: "border-emerald-300 bg-emerald-50 text-emerald-900",
+  success: "border-status-success bg-status-success-container text-status-success",
   error: "border-error/30 bg-error-container text-on-error-container",
 };
 

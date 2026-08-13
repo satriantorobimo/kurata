@@ -3,7 +3,7 @@ import { writeFile } from "node:fs/promises";
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR ?? join(process.cwd(), "public", "uploads");
+const UPLOAD_DIR = process.env.UPLOAD_DIR ?? join(/*turbopackIgnore: true*/ process.cwd(), "public", "uploads");
 const PROPERTIES_DIR = join(UPLOAD_DIR, "properties");
 
 const MAX_SIZE = 5 * 1024 * 1024;

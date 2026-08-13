@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowDown, BadgeCheck } from "lucide-react";
+import { ButtonLink } from "@/presentation/components/shared/Button";
 
 export function BrokerHero() {
   return (
@@ -14,13 +14,13 @@ export function BrokerHero() {
           <h1 className="max-w-xl text-4xl font-bold leading-tight text-on-surface md:text-5xl">Tumbuhkan Bisnis Properti Anda Bersama Kurata</h1>
           <p className="mt-5 max-w-xl text-body-md leading-7 text-on-surface-variant md:text-base">Bergabunglah dengan jaringan broker profesional untuk memasarkan listing secara lebih terarah, transparan, dan terpercaya.</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="#pendaftaran" className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-label-md font-label-md text-on-primary hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            <ButtonLink href="#pendaftaran" className="px-6 py-3">
               Daftar Sebagai Mitra Kurata
               <ArrowDown className="h-4 w-4" aria-hidden="true" />
-            </Link>
-            <Link href="#cara-kerja" className="inline-flex items-center justify-center rounded-lg border border-primary px-6 py-3 text-label-md font-label-md text-primary hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            </ButtonLink>
+            <ButtonLink href="#cara-kerja" variant="outline" className="px-6 py-3">
               Pelajari Program
-            </Link>
+            </ButtonLink>
           </div>
           <p className="mt-5 text-label-sm text-on-surface-variant">Pendaftaran awal gratis dan tanpa komitmen eksklusif.</p>
         </div>

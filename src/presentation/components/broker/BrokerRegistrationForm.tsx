@@ -9,6 +9,7 @@ import {
 } from "@/domain/entities/BrokerApplication";
 import { INITIAL_BROKER_APPLICATION_STATE } from "@/application/dto/BrokerApplicationDTO";
 import { submitBrokerApplication } from "@/app/untuk-broker/actions";
+import { SelectInput, TextInput } from "@/presentation/components/shared/FormField";
 
 const EXPERIENCE_LABELS: Record<(typeof BROKER_EXPERIENCE_LEVELS)[number], string> = {
   "less-than-1-year": "Kurang dari 1 tahun",
@@ -115,27 +116,11 @@ export function BrokerRegistrationForm() {
 }
 
 function TextField({ id, name, label, type = "text", hint, error, ...props }: { id: string; name: string; label: string; type?: string; hint?: string; error?: string } & InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <div>
-      <label htmlFor={id} className="text-label-md font-label-md text-on-surface">{label} {props.required && <span className="text-error">*</span>}</label>
-      {hint && <p className="mt-1 text-label-sm text-on-surface-variant">{hint}</p>}
-      <input id={id} name={name} type={type} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} className="mt-2 w-full rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface outline-none placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/20 aria-[invalid=true]:border-error" {...props} />
-      <FieldError id={`${id}-error`} message={error} />
-    </div>
-  );
+  return <TextInput id={id} name={name} label={label} type={type} hint={hint} error={error} {...props} />;
 }
 
 function SelectField({ id, name, label, options, error, required }: { id: string; name: string; label: string; options: { value: string; label: string }[]; error?: string; required?: boolean }) {
-  return (
-    <div>
-      <label htmlFor={id} className="text-label-md font-label-md text-on-surface">{label} {required && <span className="text-error">*</span>}</label>
-      <select id={id} name={name} required={required} defaultValue="" aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} className="mt-2 w-full rounded-lg border border-border-subtle bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 aria-[invalid=true]:border-error">
-        <option value="" disabled>Pilih salah satu</option>
-        {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-      </select>
-      <FieldError id={`${id}-error`} message={error} />
-    </div>
-  );
+  return <SelectInput id={id} name={name} label={label} options={options} error={error} required={required} />;
 }
 
 function FieldError({ id, message }: { id: string; message?: string }) {
