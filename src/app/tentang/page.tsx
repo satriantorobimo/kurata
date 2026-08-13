@@ -1,16 +1,41 @@
 import type { Metadata } from "next";
-import { PageHero, PagePlaceholder } from "@/presentation/components/shared/PageHero";
+import { Building2, Compass, Handshake, Leaf, MapPin, Rocket, ShieldCheck, Sprout, TrendingUp } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Tentang Kami | Kurata",
-  description: "Kurata adalah platform investasi tanah terdepan yang menghubungkan pembeli, broker, dan pengembang dengan transparansi penuh.",
+  description: "Kurata adalah ekosistem pertanahan digital yang menghubungkan lahan dengan peluang di Indonesia.",
+  alternates: { canonical: "/tentang" },
 };
 
+const MISSIONS = [
+  "Mempermudah masyarakat dalam mencari, menjual, dan memasarkan lahan melalui platform digital yang aman dan terpercaya.",
+  "Membangun jaringan broker profesional untuk memperluas akses informasi pertanahan di seluruh Indonesia.",
+  "Menghubungkan pemilik lahan, investor, dan pelaku usaha guna menciptakan peluang bisnis yang saling menguntungkan.",
+  "Menyediakan informasi pertanahan yang akurat dan transparan sebagai dasar pengambilan keputusan.",
+  "Mengembangkan ekosistem digital yang mendorong pemanfaatan lahan secara produktif dan berkelanjutan.",
+];
+
+const REASONS = [
+  { Icon: Sprout, title: "Ekosistem Pertanahan", description: "Lebih dari sekadar marketplace, Kurata menghubungkan seluruh pihak dalam dunia pertanahan." },
+  { Icon: Handshake, title: "Jaringan Broker Profesional", description: "Broker dapat bergabung dan memasarkan listing mereka agar pengguna memiliki lebih banyak pilihan lahan berkualitas." },
+  { Icon: TrendingUp, title: "Peluang Bisnis", description: "Kami menghubungkan lahan dengan peluang usaha, dari pertanian dan pergudangan hingga kawasan industri dan investasi jangka panjang." },
+  { Icon: ShieldCheck, title: "Informasi yang Terpercaya", description: "Kami berkomitmen menghadirkan informasi yang jelas, transparan, dan terus diperbarui untuk keputusan yang lebih baik." },
+  { Icon: Rocket, title: "Berorientasi Masa Depan", description: "Kurata terus mengembangkan inovasi digital yang lebih mudah, efisien, dan bermanfaat bagi ekosistem pertanahan Indonesia." },
+];
+
 export default function TentangPage() {
-  return (
-    <div className="min-h-screen bg-background">
-      <PageHero title="Tentang Kami" description="Kurata adalah platform investasi tanah terdepan yang menghubungkan pembeli, broker, dan pengembang dengan transparansi penuh." />
-      <PagePlaceholder>Halaman ini sedang dalam pengembangan. Informasi lengkap tentang Kurata akan segera tersedia.</PagePlaceholder>
-    </div>
-  );
+  return <div className="min-h-screen bg-background pt-16 md:pt-20">
+    <section className="relative overflow-hidden bg-surface-container-lowest py-20 md:py-28">
+      <div className="absolute inset-0" aria-hidden="true"><div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: "url('/kurata_bg.png')" }} /><div className="absolute inset-0 bg-gradient-to-r from-on-surface/80 via-on-surface/55 to-on-surface/15" /></div>
+      <div className="container-main relative z-10"><div className="max-w-3xl"><div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-label-sm font-label-sm text-white backdrop-blur"><MapPin className="h-4 w-4" />Tentang Kami KURATA</div><h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl">Menghubungkan Tanah dengan Peluang</h1><p className="mt-6 max-w-2xl text-body-md leading-7 text-white/85 md:text-lg">Ekosistem pertanahan digital terpercaya yang membantu masyarakat menemukan lahan, memasarkan properti, dan membangun peluang baru di Indonesia.</p></div></div>
+    </section>
+
+    <section className="container-main py-16 md:py-24" aria-labelledby="about-title"><div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center"><div><p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">Tentang Kurata</p><h2 id="about-title" className="mt-2 text-3xl font-bold leading-tight text-on-surface md:text-4xl">Ekosistem untuk Setiap Peluang Lahan</h2><div className="mt-6 space-y-4 text-body-md leading-7 text-on-surface-variant"><p>Kurata adalah platform digital yang menghadirkan ekosistem pertanahan terpercaya di Indonesia. Kami membantu masyarakat menemukan lahan, memasarkan properti, serta menghubungkan pemilik tanah, broker, investor, dan pelaku usaha dalam satu platform yang terintegrasi.</p><p>Kami percaya bahwa setiap bidang tanah memiliki potensi yang berbeda. Karena itu, Kurata tidak hanya menjadi tempat untuk mencari atau menjual tanah, tetapi juga ruang untuk menemukan peluang investasi, kolaborasi bisnis, dan pemanfaatan lahan yang lebih produktif.</p><p>Dengan memanfaatkan teknologi digital, kami berkomitmen menghadirkan informasi yang mudah diakses, transparan, dan relevan agar setiap keputusan terkait lahan dapat dilakukan dengan lebih percaya diri.</p></div></div><aside className="rounded-2xl bg-primary p-8 text-on-primary shadow-card sm:p-10"><Building2 className="h-10 w-10 text-on-primary-container" /><p className="mt-7 text-label-sm font-label-sm uppercase tracking-wider text-on-primary-container">Komitmen kami</p><p className="mt-3 text-2xl font-bold leading-tight">Membuat informasi pertanahan lebih mudah diakses dan lebih bermakna.</p><div className="mt-7 border-t border-white/20 pt-6 text-body-md leading-7 text-on-primary/80">Kami mempertemukan orang yang memiliki lahan dengan mereka yang memiliki visi, ide, dan peluang untuk mengembangkannya.</div></aside></div></section>
+
+    <section className="bg-surface-container-low py-16 md:py-24" aria-labelledby="vision-title"><div className="container-main grid gap-6 lg:grid-cols-2"><article className="rounded-2xl border border-primary/15 bg-surface-container-lowest p-8 shadow-card sm:p-10"><Compass className="h-9 w-9 text-primary" /><p className="mt-6 text-label-sm font-label-sm uppercase tracking-wider text-primary">Visi</p><h2 id="vision-title" className="mt-3 text-2xl font-bold leading-tight text-on-surface">Ekosistem pertanahan digital terdepan di Indonesia</h2><p className="mt-5 text-body-md leading-7 text-on-surface-variant">Menjadi ekosistem pertanahan digital terdepan di Indonesia yang menghubungkan lahan, pemilik, broker, investor, dan peluang bisnis dalam satu platform terpercaya.</p></article><article className="rounded-2xl bg-primary p-8 text-on-primary shadow-card sm:p-10"><Leaf className="h-9 w-9 text-on-primary-container" /><p className="mt-6 text-label-sm font-label-sm uppercase tracking-wider text-on-primary-container">Misi</p><h2 className="mt-3 text-2xl font-bold leading-tight">Mendorong pemanfaatan lahan yang produktif dan berkelanjutan</h2><ul className="mt-6 space-y-4">{MISSIONS.map((mission, index) => <li key={mission} className="flex gap-3 text-body-md leading-6 text-on-primary/85"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/15 text-label-sm font-label-sm text-white">{index + 1}</span>{mission}</li>)}</ul></article></div></section>
+
+    <section className="container-main py-16 md:py-24" aria-labelledby="why-title"><div className="max-w-2xl"><p className="text-label-sm font-label-sm uppercase tracking-wider text-primary">Nilai Kurata</p><h2 id="why-title" className="mt-2 text-3xl font-bold text-on-surface md:text-4xl">Mengapa Memilih Kurata?</h2><p className="mt-4 text-body-md leading-7 text-on-surface-variant">Kami membangun pengalaman pertanahan yang lebih terhubung, transparan, dan siap menghadapi masa depan.</p></div><div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{REASONS.map(({ Icon, title, description }) => <article key={title} className="rounded-xl border border-border-subtle bg-surface-container-lowest p-6 shadow-card transition-shadow hover:shadow-card-hover"><span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary"><Icon className="h-6 w-6" /></span><h3 className="mt-5 text-headline-sm font-headline-sm text-on-surface">{title}</h3><p className="mt-2 text-body-md leading-6 text-on-surface-variant">{description}</p></article>)}</div></section>
+
+    <section className="bg-primary py-16 text-on-primary md:py-24" aria-labelledby="philosophy-title"><div className="container-main max-w-4xl text-center"><p className="text-label-sm font-label-sm uppercase tracking-wider text-on-primary-container">Filosofi Kurata</p><h2 id="philosophy-title" className="mt-3 text-3xl font-bold leading-tight md:text-4xl">Tanah Bukan Sekadar Aset, tetapi Awal dari Berbagai Peluang</h2><p className="mt-6 text-body-md leading-7 text-on-primary/85">Di Kurata, kami percaya bahwa setiap lahan memiliki potensi untuk berkembang menjadi tempat tinggal, pusat bisnis, kawasan industri, lahan produktif, maupun investasi masa depan. Karena itu, kami hadir untuk mempertemukan orang yang memiliki lahan dengan mereka yang memiliki visi, ide, dan peluang untuk mengembangkannya.</p><p className="mt-8 text-xl font-bold">Kurata — Menghubungkan Tanah dengan Peluang.</p></div></section>
+  </div>;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, type InputHTMLAttributes } from "react";
+import Link from "next/link";
 import { CheckCircle2, LoaderCircle, ShieldCheck } from "lucide-react";
 import {
   BROKER_EXPERIENCE_LEVELS,
@@ -101,7 +102,7 @@ export function BrokerRegistrationForm() {
 
       <label className="mt-6 flex cursor-pointer items-start gap-3 text-body-md text-on-surface-variant">
         <input type="checkbox" name="acceptedTerms" className="mt-1 h-4 w-4 shrink-0 rounded border-outline text-primary focus:ring-primary" />
-        <span>Saya menyetujui data ini digunakan untuk proses peninjauan pendaftaran Mitra Kurata dan memahami bahwa data perlu diverifikasi kembali.</span>
+        <span>Saya menyetujui data ini digunakan untuk proses peninjauan pendaftaran Mitra Kurata, memahami bahwa data perlu diverifikasi kembali, serta telah membaca dan menyetujui <Link href="#syarat-ketentuan" className="font-label-md text-primary hover:underline">Syarat dan Ketentuan Kemitraan Mitra Kurata</Link>.</span>
       </label>
       <FieldError id="acceptedTerms-error" message={errors.acceptedTerms} />
 

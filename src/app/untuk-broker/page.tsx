@@ -6,6 +6,7 @@ import { BrokerFaq } from "@/presentation/components/broker/BrokerFaq";
 import { BrokerHero } from "@/presentation/components/broker/BrokerHero";
 import { BrokerProcess } from "@/presentation/components/broker/BrokerProcess";
 import { BrokerRegistrationForm } from "@/presentation/components/broker/BrokerRegistrationForm";
+import { BrokerTerms } from "@/presentation/components/broker/BrokerTerms";
 
 export const metadata: Metadata = {
   title: "Mitra Kurata | Kurata",
@@ -66,6 +67,7 @@ export default function BrokerPage() {
       </section>
 
       <BrokerFaq />
+      <BrokerTerms />
     </div>
   );
 }
