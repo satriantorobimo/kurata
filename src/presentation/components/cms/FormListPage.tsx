@@ -23,7 +23,7 @@ const STATUS_OPTIONS = [
   { value: "under_review", label: "Ditinjau" },
   { value: "changes_requested", label: "Perlu perbaikan" },
   { value: "rejected", label: "Ditolak" },
-  { value: "completed", label: "Selesai" },
+  { value: "published", label: "Disetujui" },
 ];
 
 export function FormListPage({ initialData }: { initialData: CmsForm[] }) {
