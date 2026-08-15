@@ -1,10 +1,10 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { getDatabase } from "@/infrastructure/database/client";
-import { forms, passwordCredentials, properties, users } from "@/infrastructure/database/schema";
+import { forms, passwordCredentials, passwordResetTokens, properties, users } from "@/infrastructure/database/schema";
 import { container } from "@/infrastructure/di/container";
 import { createPasswordSetupToken } from "@/infrastructure/auth/password-setup";
 import { sendBrokerPasswordSetupEmail } from "@/infrastructure/email/send-broker-onboarding-email";
@@ -27,7 +27,10 @@ function isReviewStatus(value: string): value is ReviewStatus {
 export interface ReviewActionResult {
   ok: boolean;
   message: string;
+  retryAfterSeconds?: number;
 }
+
+const PASSWORD_SETUP_RESEND_COOLDOWN_SECONDS = 120;
 
 export async function updateAssetReviewStatus(propertyId: string, status: string): Promise<ReviewActionResult> {
   await requireRole("admin", "super_admin");
@@ -139,6 +142,21 @@ export async function resendBrokerPasswordSetupEmail(formId: string): Promise<Re
     return { ok: false, message: "Akun ini sudah menggunakan password yang dibuat pengguna." };
   }
 
+  const [latestToken] = await getDatabase()
+    .select({ createdAt: passwordResetTokens.createdAt })
+    .from(passwordResetTokens)
+    .where(eq(passwordResetTokens.userId, user.id))
+    .orderBy(desc(passwordResetTokens.createdAt))
+    .limit(1);
+
+  if (latestToken) {
+    const elapsedSeconds = Math.floor((Date.now() - latestToken.createdAt.getTime()) / 1000);
+    const retryAfterSeconds = PASSWORD_SETUP_RESEND_COOLDOWN_SECONDS - elapsedSeconds;
+    if (retryAfterSeconds > 0) {
+      return { ok: false, message: `Tunggu ${retryAfterSeconds} detik sebelum mengirim ulang akses akun.`, retryAfterSeconds };
+    }
+  }
+
   const token = await createPasswordSetupToken(user.id);
   try {
     await sendBrokerPasswordSetupEmail(form.email, token, form.fullName);
@@ -147,5 +165,5 @@ export async function resendBrokerPasswordSetupEmail(formId: string): Promise<Re
     return { ok: false, message: "Gagal mengirim email akses. Periksa konfigurasi SMTP." };
   }
 
-  return { ok: true, message: "Email pembuatan password telah dikirim ulang." };
+  return { ok: true, message: "Email pembuatan password telah dikirim ulang.", retryAfterSeconds: PASSWORD_SETUP_RESEND_COOLDOWN_SECONDS };
 }

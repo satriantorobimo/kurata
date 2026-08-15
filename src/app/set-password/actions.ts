@@ -33,11 +33,12 @@ export async function setPassword(
   }
   if (token.length < 10) return { status: "error", message: "Tautan pembuatan password tidak valid." };
 
-  const database = getDatabase();
-  const now = new Date();
-  const passwordHash = await hashPassword(password);
+  try {
+    const database = getDatabase();
+    const now = new Date();
+    const passwordHash = await hashPassword(password);
 
-  const result = await database.transaction(async (trx) => {
+    const result = await database.transaction(async (trx) => {
     const [resetToken] = await trx
       .update(passwordResetTokens)
       .set({ consumedAt: now })
@@ -61,11 +62,15 @@ export async function setPassword(
       .where(eq(users.id, resetToken.userId));
 
     return true;
-  });
+    });
 
-  if (!result) {
-    return { status: "error", message: "Tautan pembuatan password tidak valid atau sudah kedaluwarsa." };
+    if (!result) {
+      return { status: "error", message: "Tautan pembuatan password tidak valid atau sudah kedaluwarsa." };
+    }
+
+    return { status: "success", message: "Password berhasil dibuat. Anda sekarang dapat masuk ke dashboard Mitra Kurata." };
+  } catch (error) {
+    console.error("[set-password] Failed to set password:", error);
+    return { status: "error", message: "Password belum dapat disimpan. Silakan coba lagi atau minta admin mengirim ulang akses akun." };
   }
-
-  return { status: "success", message: "Password berhasil dibuat. Anda sekarang dapat masuk ke dashboard Mitra Kurata." };
 }
