@@ -13,8 +13,6 @@ export interface SetPasswordState {
   fieldErrors?: { password?: string; confirmPassword?: string };
 }
 
-export const INITIAL_SET_PASSWORD_STATE: SetPasswordState = { status: "idle" };
-
 export async function setPassword(
   _previousState: SetPasswordState,
   formData: FormData,
