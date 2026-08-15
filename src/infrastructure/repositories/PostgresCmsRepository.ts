@@ -689,7 +689,7 @@ export class PostgresCmsRepository {
       .where(eq(forms.id, id));
   }
 
-  async promoteBrokerFromApplication(formId: string, email: string, fullName: string, phone: string | null): Promise<string | null> {
+  async promoteBrokerFromApplication(_formId: string, email: string, fullName: string, phone: string | null): Promise<{ userId: string; requiresPasswordSetup: boolean }> {
     const database = getDatabase();
     const [existingUser] = await database.select({ id: users.id }).from(users).where(eq(users.email, email.toLowerCase())).limit(1);
 
@@ -709,7 +709,7 @@ export class PostgresCmsRepository {
         await database.insert(userVerifications).values({ userId: existingUser.id, status: "approved" });
       }
 
-      return existingUser.id;
+      return { userId: existingUser.id, requiresPasswordSetup: false };
     }
 
     const now = new Date();
@@ -723,7 +723,7 @@ export class PostgresCmsRepository {
     await database.transaction(async (trx) => {
       await trx
         .insert(users)
-        .values({ id: userId, email: email.toLowerCase(), fullName, phone, role: "broker", status: "active", emailVerifiedAt: now, createdAt: now, updatedAt: now });
+        .values({ id: userId, email: email.toLowerCase(), fullName, phone, role: "broker", status: "active", createdAt: now, updatedAt: now });
 
       await trx.insert(passwordCredentials).values({ userId, passwordHash, passwordChangedAt: now, mustChangePassword: true, createdAt: now, updatedAt: now });
 
@@ -732,7 +732,7 @@ export class PostgresCmsRepository {
       await trx.insert(userVerifications).values({ userId, status: "approved" });
     });
 
-    return userId;
+    return { userId, requiresPasswordSetup: true };
   }
 
   // ------------------------------------------------------------------- Users

@@ -5,6 +5,8 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 
 import { hashPassword } from "@/infrastructure/auth/password-hasher";
+import { createPasswordSetupToken } from "@/infrastructure/auth/password-setup";
+import { sendBrokerPasswordSetupEmail } from "@/infrastructure/email/send-broker-onboarding-email";
 import { requireRole } from "@/infrastructure/security/authorization-dal";
 import { container } from "@/infrastructure/di/container";
 import { logAudit } from "@/infrastructure/audit/log";
@@ -339,13 +341,23 @@ export async function updateFormSubmissionAction(id: string, input: { fullName: 
 
     await container.cmsRepo.updateForm(id, input);
 
+    let onboardingEmailFailed = false;
     if (wasApproved) {
-      await container.cmsRepo.promoteBrokerFromApplication(id, existing.email, existing.fullName, existing.phone);
+      const promotion = await container.cmsRepo.promoteBrokerFromApplication(id, input.email, input.fullName, input.phone);
+      if (promotion.requiresPasswordSetup) {
+        const token = await createPasswordSetupToken(promotion.userId);
+        try {
+          await sendBrokerPasswordSetupEmail(input.email, token, input.fullName);
+        } catch (error) {
+          onboardingEmailFailed = true;
+          console.error("[broker-approval] Failed to send password setup email:", error);
+        }
+      }
     }
 
     revalidatePath("/cms/forms");
     logAudit({ actorUserId: actor.userId, eventType: "form.update", entityType: "form", entityId: id, metadata: JSON.stringify({ reviewStatus: input.reviewStatus, brokerPromoted: wasApproved }) });
-    return { ok: true, message: wasApproved ? "Pengajuan mitra disetujui dan akun broker telah dibuat." : "Pengajuan berhasil diperbarui." };
+    return { ok: true, message: wasApproved ? onboardingEmailFailed ? "Pengajuan mitra disetujui, tetapi email pembuatan password gagal dikirim." : "Pengajuan mitra disetujui. Email pembuatan password telah dikirim bila akun baru dibuat." : "Pengajuan berhasil diperbarui." };
   } catch {
     return { ok: false, message: "Operasi gagal. Coba lagi." };
   }
