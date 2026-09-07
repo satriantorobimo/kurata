@@ -5,7 +5,7 @@ import { Button } from "@/presentation/components/shared/Button";
 export function HighlightCards() {
   return (
     <section
-      className="container-main relative z-20 -mt-20 w-full py-10 md:-mt-24 md:py-12"
+      className="container-main relative z-20 w-full pb-10 pt-2 md:pb-12 md:pt-3"
       aria-labelledby="broker-highlight-title"
     >
       <article className="group overflow-hidden rounded-[1.5rem] border border-[#e6d46c] bg-[#fff4b8] shadow-card transition-shadow hover:shadow-card-hover">
