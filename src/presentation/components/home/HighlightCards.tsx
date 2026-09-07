@@ -1,103 +1,63 @@
-import { Handshake, Verified, ArrowRight, CheckCircle } from "lucide-react";
+import { Plus, UsersRound } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/presentation/components/shared/Button";
 
-interface HighlightCardData {
-  title: string;
-  description: string;
-  benefits: string[];
-  ctaLabel: string;
-  ctaHref: string;
-  icon: "handshake" | "verified";
-  imageSrc: string;
-  imageAlt: string;
-}
-
-const HIGHLIGHT_CARDS: HighlightCardData[] = [
-  {
-    title: "Mitra Kurata",
-    description: "Pasarkan tanah Anda melalui jaringan profesional Kurata.",
-    benefits: [
-      "Jangkauan Lebih Luas",
-      "Proses Lebih Mudah",
-      "Bersama Mitra Kurata Terpercaya",
-    ],
-    ctaLabel: "Jadi Mitra Kurata",
-    ctaHref: "/untuk-broker",
-    icon: "handshake",
-    imageSrc: "/broker.png",
-    imageAlt: "Ilustrasi Mitra Kurata",
-  },
-  {
-    title: "Exclusive Kurata",
-    description: "Listing pilihan yang telah diverifikasi langsung oleh tim Kurata.",
-    benefits: [
-      "Listing Terverifikasi",
-      "Legalitas Terjamin",
-      "Kualitas Terbaik",
-    ],
-    ctaLabel: "Lihat Listing",
-    ctaHref: "/cari-tanah",
-    icon: "verified",
-    imageSrc: "/eksklusif.png",
-    imageAlt: "Ilustrasi Exclusive Kurata",
-  },
-];
-
-function HighlightCard({ card }: { card: HighlightCardData }) {
-  const IconComponent = card.icon === "handshake" ? Handshake : Verified;
-
-  return (
-    <div className="bg-surface-container-lowest rounded-xl shadow-card p-8 flex flex-col md:flex-row items-center gap-6 group hover:shadow-card-hover transition-shadow">
-      <div className="flex-1">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary shrink-0">
-            <IconComponent className="w-6 h-6" />
-          </div>
-          <h3 className="font-headline-md text-headline-md text-primary">
-            {card.title}
-          </h3>
-        </div>
-        <p className="text-body-md text-on-surface-variant mb-6">
-          {card.description}
-        </p>
-        <ul className="space-y-2 mb-8">
-          {card.benefits.map((benefit) => (
-            <li
-              key={benefit}
-              className="flex items-center gap-2 text-label-md text-on-surface"
-            >
-              <CheckCircle className="w-4 h-4 text-primary shrink-0" />
-              {benefit}
-            </li>
-          ))}
-        </ul>
-        <Button variant="primary" size="md" href={card.ctaHref}>
-          {card.ctaLabel}
-          <ArrowRight className="w-4 h-4" />
-        </Button>
-      </div>
-      <div className="relative aspect-square w-full overflow-hidden rounded-lg md:w-1/2">
-        <Image
-          src={card.imageSrc}
-          alt={card.imageAlt}
-          fill
-          sizes="(min-width: 768px) 40vw, 100vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-      </div>
-    </div>
-  );
-}
-
 export function HighlightCards() {
   return (
-    <section className="w-full container-main py-16 -mt-24 relative z-20">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-        {HIGHLIGHT_CARDS.map((card) => (
-          <HighlightCard key={card.title} card={card} />
-        ))}
-      </div>
+    <section
+      className="container-main relative z-20 -mt-20 w-full py-10 md:-mt-24 md:py-12"
+      aria-labelledby="broker-highlight-title"
+    >
+      <article className="group overflow-hidden rounded-[1.5rem] border border-[#e6d46c] bg-[#fff4b8] shadow-card transition-shadow hover:shadow-card-hover">
+        <div className="grid min-h-56 md:grid-cols-[16rem_minmax(0,1fr)_21rem] md:items-stretch">
+          <div className="relative min-h-52 overflow-hidden md:min-h-56">
+            <Image
+              src="/mitra-kurata-banner.png"
+              alt="Mitra Kurata memeriksa data tanah melalui ponsel"
+              fill
+              sizes="(min-width: 768px) 16rem, 100vw"
+              className="object-cover object-[48%_68%] transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+
+          <div className="flex flex-col justify-center px-6 py-7 md:px-8 md:py-8 lg:px-10">
+            <p className="text-label-md font-label-md text-[#17231b]">
+              Untuk Mitra / Broker
+            </p>
+            <h2
+              id="broker-highlight-title"
+              className="mt-2 max-w-xl text-2xl font-bold leading-tight tracking-tight text-primary md:text-3xl"
+            >
+              Punya Tanah atau
+              <br className="hidden sm:block" /> Membawa Listing?
+            </h2>
+            <p className="mt-3 max-w-xl text-body-md leading-6 text-[#38443b] md:text-base">
+              Masukkan data tanah dalam 2 menit dan biarkan Kurata membantu
+              memasarkannya.
+            </p>
+          </div>
+
+          <div className="flex flex-col justify-center gap-3 px-6 pb-7 md:px-7 md:py-8 md:pr-8">
+            <Button
+              href="/broker/assets/new"
+              size="lg"
+              className="min-h-14 w-full whitespace-nowrap rounded-xl"
+            >
+              <Plus className="h-5 w-5" aria-hidden="true" />
+              Input Tanah Sekarang
+            </Button>
+            <Button
+              href="/untuk-broker"
+              variant="outline"
+              size="lg"
+              className="min-h-14 w-full whitespace-nowrap rounded-xl border-2 bg-transparent"
+            >
+              <UsersRound className="h-5 w-5" aria-hidden="true" />
+              Jadi Mitra Kurata
+            </Button>
+          </div>
+        </div>
+      </article>
     </section>
   );
 }
